@@ -2,11 +2,38 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!assets/).*)",
       "destination": "/index.html"
     }
   ],
   "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|ttf|otf))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [
@@ -29,6 +56,10 @@
         {
           "key": "Permissions-Policy",
           "value": "camera=(self), microphone=(), geolocation=()"
+        },
+        {
+          "key": "X-Accel-Buffering",
+          "value": "no"
         }
       ]
     }

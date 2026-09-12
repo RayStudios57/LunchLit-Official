@@ -10,6 +10,43 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  build: {
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          // Core React — cached longest, changes never
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+            return 'vendor-react';
+          }
+          // Supabase client — separate so auth updates don't bust UI cache
+          if (id.includes('node_modules/@supabase/')) {
+            return 'vendor-supabase';
+          }
+          // All Radix UI / shadcn components
+          if (id.includes('node_modules/@radix-ui/') || id.includes('node_modules/class-variance-authority') || id.includes('node_modules/clsx') || id.includes('node_modules/tailwind-merge')) {
+            return 'vendor-ui';
+          }
+          // React Router
+          if (id.includes('node_modules/react-router') || id.includes('node_modules/@remix-run/')) {
+            return 'vendor-router';
+          }
+          // Charts — heavy, load separately
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) {
+            return 'vendor-charts';
+          }
+          // Tanstack Query
+          if (id.includes('node_modules/@tanstack/')) {
+            return 'vendor-query';
+          }
+          // Date utilities
+          if (id.includes('node_modules/date-fns')) {
+            return 'vendor-date';
+          }
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     mode === "development" && componentTagger(),
@@ -60,3 +97,4 @@ export default defineConfig(({ mode }) => ({
     },
   },
 }));
+

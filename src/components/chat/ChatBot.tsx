@@ -119,9 +119,21 @@ export function ChatBot() {
     if (resp.status === 402) {
       throw new Error('AI credits exhausted. Please try again later.');
     }
-    if (!resp.ok || !resp.body) {
-      throw new Error('Failed to start stream');
+    if (resp.status === 401) {
+      throw new Error('Not authorized. Please sign out and sign back in.');
     }
+    if (!resp.ok || !resp.body) {
+      // Try to read the error body for a helpful message
+      let detail = 'Failed to start AI chat.';
+      try {
+        const errBody = await resp.clone().json();
+        if (errBody?.error) detail = errBody.error;
+      } catch {
+        // ignore parse errors
+      }
+      throw new Error(detail);
+    }
+
 
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();

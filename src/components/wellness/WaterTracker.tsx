@@ -2,16 +2,29 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Minus, Plus, GlassWater } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useWellness } from '@/hooks/useWellness';
+import { useToast } from '@/hooks/use-toast';
 
 const GOAL = 8;
 
 export function WaterTracker() {
   const { today, upsertToday, waterThisMonth } = useWellness();
+  const { toast } = useToast();
   const count = today?.water_count ?? 0;
 
   const update = (delta: number) => {
     const next = Math.max(0, Math.min(GOAL + 8, count + delta));
-    upsertToday.mutate({ water_count: next });
+    upsertToday.mutate(
+      { water_count: next },
+      {
+        onError: (err) => {
+          toast({
+            title: 'Could not update hydration',
+            description: err instanceof Error ? err.message : 'Please try again.',
+            variant: 'destructive',
+          });
+        },
+      }
+    );
   };
 
   return (
@@ -38,10 +51,10 @@ export function WaterTracker() {
             <span className="font-semibold text-foreground">{count}</span> / {GOAL} glasses today
           </span>
           <div className="flex gap-1">
-            <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => update(-1)}>
+            <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => update(-1)} disabled={upsertToday.isPending || count === 0}>
               <Minus className="h-4 w-4" />
             </Button>
-            <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => update(1)}>
+            <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => update(1)} disabled={upsertToday.isPending}>
               <Plus className="h-4 w-4" />
             </Button>
           </div>

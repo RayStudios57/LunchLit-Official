@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Smile } from 'lucide-react';
 import { useWellness } from '@/hooks/useWellness';
+import { useToast } from '@/hooks/use-toast';
 
 const MOODS = [
   { emoji: '😄', label: 'Great' },
@@ -12,10 +13,22 @@ const MOODS = [
 
 export function MoodCheckIn() {
   const { today, upsertToday } = useWellness();
+  const { toast } = useToast();
   const selected = today?.mood ?? null;
 
   const pick = (label: string) => {
-    upsertToday.mutate({ mood: label });
+    upsertToday.mutate(
+      { mood: label },
+      {
+        onError: (err) => {
+          toast({
+            title: 'Could not save mood',
+            description: err instanceof Error ? err.message : 'Please try again.',
+            variant: 'destructive',
+          });
+        },
+      }
+    );
   };
 
   return (
@@ -32,7 +45,8 @@ export function MoodCheckIn() {
             <button
               key={m.label}
               onClick={() => pick(m.label)}
-              className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${
+              disabled={upsertToday.isPending}
+              className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all disabled:opacity-60 ${
                 selected === m.label
                   ? 'bg-emerald-500/20 ring-2 ring-emerald-500 scale-105'
                   : 'bg-secondary/50 hover:bg-secondary'

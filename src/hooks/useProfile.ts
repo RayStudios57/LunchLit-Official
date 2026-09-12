@@ -88,8 +88,20 @@ export function useProfile() {
       });
     
     if (uploadError) {
-      console.error('Avatar upload error:', uploadError);
-      throw uploadError;
+      console.error('Avatar upload error details:', {
+        message: uploadError.message,
+        error: uploadError,
+        fileName,
+        fileSize: file.size,
+        fileType: file.type,
+      });
+      // Provide a user-friendly message based on the error type
+      const msg = uploadError.message?.includes('row-level security') || uploadError.message?.includes('policy')
+        ? 'Storage permissions not configured. Please contact support.'
+        : uploadError.message?.includes('Bucket not found')
+        ? 'Avatar storage not set up yet. Please contact support.'
+        : uploadError.message || 'Upload failed. Please try again.';
+      throw new Error(msg);
     }
     
     const { data: { publicUrl } } = supabase.storage
@@ -100,6 +112,7 @@ export function useProfile() {
     
     return publicUrl;
   };
+
 
   return { 
     profile: isPresentationMode ? (dummyProfile as Profile) : profile, 

@@ -173,8 +173,15 @@ Guidelines:
     console.log('Streaming response started for user', user.id);
     
     return new Response(response.body, {
-      headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'X-Accel-Buffering': 'no',
+      },
     });
+
   } catch (error) {
     console.error('Chat error:', error);
     const message = error instanceof Error ? error.message : 'Unknown error';
