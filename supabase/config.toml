@@ -1,4 +1,7 @@
-project_id = "jpbofqcjfsbwlnbqptvb"
+project_id = "wnbgbezfghfkakhnbdfj"
+
+[functions.find-scholarships]
+verify_jwt = false
 
 [functions.study-chat]
 verify_jwt = true
