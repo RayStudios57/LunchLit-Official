@@ -4,19 +4,35 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-
 interface Course { name: string; grade: string; credits: number; }
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: 'AI not configured' }), {
+    const apiKey = 
+      Deno.env.get('GEMINI_API_KEY') || 
+      Deno.env.get('GOOGLE_AI_API_KEY') || 
+      Deno.env.get('GOOGLE_API_KEY') || 
+      Deno.env.get('LOVABLE_API_KEY');
+
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: 'AI not configured. Please set GEMINI_API_KEY or GOOGLE_AI_API_KEY in Supabase secrets.' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    const isGoogle = apiKey.startsWith('AIza') || Boolean(
+      Deno.env.get('GEMINI_API_KEY') || 
+      Deno.env.get('GOOGLE_AI_API_KEY') || 
+      Deno.env.get('GOOGLE_API_KEY')
+    );
+
+    const endpoint = isGoogle 
+      ? 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'
+      : 'https://ai.gateway.lovable.dev/v1/chat/completions';
+
+    const model = isGoogle ? 'gemini-2.0-flash' : 'google/gemini-2.5-flash';
 
     const { imageDataUrl } = await req.json();
     if (!imageDataUrl || typeof imageDataUrl !== 'string' || !imageDataUrl.startsWith('data:image/')) {
@@ -39,14 +55,14 @@ Rules:
 - Skip non-academic rows (attendance, conduct, etc.).
 - If you can't read it, return { "courses": [] }.`;
 
-    const aiRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const aiRes = await fetch(endpoint, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model,
         messages: [
           { role: 'system', content: systemPrompt },
           {

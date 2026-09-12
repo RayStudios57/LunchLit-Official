@@ -12,13 +12,32 @@ Deno.serve(async (req) => {
 
   try {
     const { goal, age, daysPerWeek, equipment, notes } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: "AI not configured" }), {
+    const apiKey = 
+      Deno.env.get("GEMINI_API_KEY") || 
+      Deno.env.get("GOOGLE_AI_API_KEY") || 
+      Deno.env.get("GOOGLE_API_KEY") || 
+      Deno.env.get("LOVABLE_API_KEY");
+
+    if (!apiKey) {
+      return new Response(JSON.stringify({ 
+        error: "AI not configured. Please set GEMINI_API_KEY or GOOGLE_AI_API_KEY in Supabase secrets." 
+      }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const isGoogle = apiKey.startsWith("AIza") || Boolean(
+      Deno.env.get("GEMINI_API_KEY") || 
+      Deno.env.get("GOOGLE_AI_API_KEY") || 
+      Deno.env.get("GOOGLE_API_KEY")
+    );
+
+    const endpoint = isGoogle 
+      ? "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+      : "https://ai.gateway.lovable.dev/v1/chat/completions";
+
+    const model = isGoogle ? "gemini-2.0-flash" : "google/gemini-2.5-flash";
 
     const prompt = `Create a personalized gym workout routine.
 Goal: ${goal || "general fitness"}
@@ -29,14 +48,14 @@ Extra notes: ${notes || "none"}
 
 Return a single routine for one workout day appropriate for this person. Keep it safe and age-appropriate.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model,
         messages: [
           { role: "system", content: "You are a certified fitness coach. You create safe, effective, age-appropriate workout routines." },
           { role: "user", content: prompt },

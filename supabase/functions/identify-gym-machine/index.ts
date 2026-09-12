@@ -17,17 +17,41 @@ Deno.serve(async (req) => {
       });
     }
 
-    const apiKey = Deno.env.get('LOVABLE_API_KEY');
-    if (!apiKey) throw new Error('LOVABLE_API_KEY not configured');
+    const apiKey = 
+      Deno.env.get('GEMINI_API_KEY') || 
+      Deno.env.get('GOOGLE_AI_API_KEY') || 
+      Deno.env.get('GOOGLE_API_KEY') || 
+      Deno.env.get('LOVABLE_API_KEY');
+    
+    if (!apiKey) {
+      return new Response(JSON.stringify({ 
+        error: 'AI key not configured. Please set GEMINI_API_KEY or GOOGLE_AI_API_KEY in Supabase secrets.' 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
-    const res = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const isGoogle = apiKey.startsWith('AIza') || Boolean(
+      Deno.env.get('GEMINI_API_KEY') || 
+      Deno.env.get('GOOGLE_AI_API_KEY') || 
+      Deno.env.get('GOOGLE_API_KEY')
+    );
+
+    const endpoint = isGoogle 
+      ? 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'
+      : 'https://ai.gateway.lovable.dev/v1/chat/completions';
+
+    const model = isGoogle ? 'gemini-2.0-flash' : 'google/gemini-2.5-flash';
+
+    const res = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model,
         messages: [
           {
             role: 'system',
