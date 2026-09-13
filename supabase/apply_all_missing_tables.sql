@@ -310,7 +310,7 @@ CREATE TRIGGER update_discussions_updated_at
 
 -- Insert a default school
 INSERT INTO public.schools (id, name, address) 
-VALUES ('00000000-0000-0000-0000-000000000001', 'Generic High School', '123 Main Street');
+VALUES ('00000000-0000-0000-0000-000000000001', 'Generic High School', '123 Main Street') ON CONFLICT (id) DO NOTHING;
 
 -- Enable realtime for discussions
 ALTER PUBLICATION supabase_realtime ADD TABLE public.discussions;
@@ -504,9 +504,9 @@ BEFORE UPDATE ON public.brag_sheet_entries
 FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
 
--- Create index for efficient queries by user and grade level
-CREATE INDEX idx_brag_sheet_user_grade ON public.brag_sheet_entries(user_id, grade_level);
-CREATE INDEX idx_brag_sheet_user_year ON public.brag_sheet_entries(user_id, school_year);
+-- CREATE INDEX IF NOT EXISTS for efficient queries by user and grade level
+CREATE INDEX IF NOT EXISTS idx_brag_sheet_user_grade ON public.brag_sheet_entries(user_id, grade_level);
+CREATE INDEX IF NOT EXISTS idx_brag_sheet_user_year ON public.brag_sheet_entries(user_id, school_year);
 
 -- =============================================
 -- Migration: 20251222222151_d524467b-4b52-44f6-9d8d-086083f4751c.sql
@@ -514,11 +514,11 @@ CREATE INDEX idx_brag_sheet_user_year ON public.brag_sheet_entries(user_id, scho
 
 -- Add field to track last grade progression
 ALTER TABLE public.profiles 
-ADD COLUMN last_grade_progression TIMESTAMP WITH TIME ZONE DEFAULT NULL;
+ADD COLUMN IF NOT EXISTS last_grade_progression TIMESTAMP WITH TIME ZONE DEFAULT NULL;
 
 -- Add a graduated flag for students who complete Senior year
 ALTER TABLE public.profiles 
-ADD COLUMN is_graduated BOOLEAN DEFAULT false;
+ADD COLUMN IF NOT EXISTS is_graduated BOOLEAN DEFAULT false;
 
 -- =============================================
 -- Migration: 20251230040243_06cc5bd6-0453-42fa-89fc-90b94b5c66e4.sql
@@ -795,9 +795,9 @@ DROP POLICY IF EXISTS "System can insert notifications" ON public.notifications;
 CREATE POLICY "System can insert notifications" ON public.notifications FOR INSERT
 WITH CHECK (true);
 
--- Create index for faster queries
-CREATE INDEX idx_notifications_user_id ON public.notifications(user_id);
-CREATE INDEX idx_notifications_created_at ON public.notifications(created_at DESC);
+-- CREATE INDEX IF NOT EXISTS for faster queries
+CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON public.notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON public.notifications(created_at DESC);
 
 -- =============================================
 -- Migration: 20260103020031_76c6ea2f-b38c-46d9-ac27-8f2dc02dad7f.sql
@@ -990,7 +990,7 @@ CREATE POLICY "Users can update their own notification preferences" ON public.no
 USING (auth.uid() = user_id);
 
 -- Add index for faster lookups
-CREATE INDEX idx_notification_preferences_user_id ON public.notification_preferences(user_id);
+CREATE INDEX IF NOT EXISTS idx_notification_preferences_user_id ON public.notification_preferences(user_id);
 
 -- Add check constraints to menu_uploads for security
 ALTER TABLE public.menu_uploads ADD CONSTRAINT menu_uploads_school_email_check 
@@ -1078,7 +1078,7 @@ WITH CHECK (has_role(auth.uid(), 'admin'::app_role));
 
 -- Add custom_role_id to user_roles table for custom role assignments
 ALTER TABLE public.user_roles 
-ADD COLUMN custom_role_id uuid REFERENCES public.custom_roles(id) ON DELETE CASCADE;
+ADD COLUMN IF NOT EXISTS custom_role_id uuid REFERENCES public.custom_roles(id) ON DELETE CASCADE;
 
 -- Add trigger for updated_at
 DROP TRIGGER IF EXISTS update_custom_roles_updated_at ON public.custom_roles;
@@ -1186,10 +1186,10 @@ CREATE POLICY "Admins can insert audit logs" ON public.role_audit_logs
 FOR INSERT
 WITH CHECK (has_role(auth.uid(), 'admin'::app_role));
 
--- Create index for faster queries
-CREATE INDEX idx_audit_logs_created_at ON public.role_audit_logs(created_at DESC);
-CREATE INDEX idx_audit_logs_action_type ON public.role_audit_logs(action_type);
-CREATE INDEX idx_audit_logs_target_user ON public.role_audit_logs(target_user_id);
+-- CREATE INDEX IF NOT EXISTS for faster queries
+CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON public.role_audit_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_action_type ON public.role_audit_logs(action_type);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_target_user ON public.role_audit_logs(target_user_id);
 
 -- Add highest_role_icon to cache user's display role in discussions (for performance)
 ALTER TABLE public.profiles 
@@ -1434,7 +1434,8 @@ USING (auth.uid() = user_id);
 INSERT INTO public.creator_social_links (platform, url, icon, display_order) VALUES
 ('email', 'mailto:kutturam0912@gmail.com', 'Mail', 1),
 ('github', 'https://github.com/ramakrishnakrishna', 'Github', 2),
-('linkedin', 'https://linkedin.com/in/ramakrishnakrishna', 'Linkedin', 3);
+('linkedin', 'https://linkedin.com/in/ramakrishnakrishna', 'Linkedin', 3)
+ON CONFLICT DO NOTHING;
 
 -- =============================================
 -- Migration: 20260130000514_d888d219-7a8e-4d1e-a593-d816bb589638.sql
@@ -1461,7 +1462,7 @@ WITH CHECK (true);
 -- =============================================
 
 -- Create storage bucket for brag sheet images
-INSERT INTO storage.buckets (id, name, public) VALUES ('brag-sheet-images', 'brag-sheet-images', true);
+INSERT INTO storage.buckets (id, name, public) VALUES ('brag-sheet-images', 'brag-sheet-images', true) ON CONFLICT (id) DO NOTHING;
 
 -- Create storage policies for brag sheet images
 DROP POLICY IF EXISTS "Users can view brag sheet images" ON storage.objects;
@@ -1482,7 +1483,7 @@ USING (bucket_id = 'brag-sheet-images' AND auth.uid()::text = (storage.foldernam
 
 -- Add images column to brag_sheet_entries table
 ALTER TABLE public.brag_sheet_entries 
-ADD COLUMN images text[] DEFAULT '{}'::text[];
+ADD COLUMN IF NOT EXISTS images text[] DEFAULT '{}'::text[];
 
 -- =============================================
 -- Migration: 20260130003652_baac5c69-674f-4be3-944a-5d18a7817024.sql
@@ -1624,7 +1625,7 @@ USING (has_role(auth.uid(), 'admin'::app_role));
 
 
 -- Add profile visibility column
-ALTER TABLE public.profiles ADD COLUMN is_public boolean DEFAULT false;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS is_public boolean DEFAULT false;
 
 -- Create tutors table
 CREATE TABLE IF NOT EXISTS public.tutors (
@@ -1796,7 +1797,7 @@ CREATE TABLE IF NOT EXISTS public.cheers (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   from_user_id uuid NOT NULL,
   to_user_id uuid NOT NULL,
-  message text DEFAULT 'ÃƒÂ°Ã…Â¸Ã…Â½Ã¢â‚¬Â°',
+  message text DEFAULT 'ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â½ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°',
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
@@ -1832,7 +1833,7 @@ CREATE POLICY "Authenticated users can submit their own menu uploads" ON public.
 
 
 -- Add shared_with_friends flag to tasks
-ALTER TABLE public.tasks ADD COLUMN shared_with_friends boolean DEFAULT false;
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS shared_with_friends boolean DEFAULT false;
 
 -- Allow accepted friends to view each other's class schedules
 DROP POLICY IF EXISTS "Friends can view each other's schedules" ON public.class_schedules;
@@ -1908,9 +1909,9 @@ CREATE POLICY "Users can delete their own messages" ON public.direct_messages FO
 TO authenticated
 USING (auth.uid() = sender_id);
 
-CREATE INDEX idx_dm_sender ON public.direct_messages(sender_id);
-CREATE INDEX idx_dm_receiver ON public.direct_messages(receiver_id);
-CREATE INDEX idx_dm_created ON public.direct_messages(created_at);
+CREATE INDEX IF NOT EXISTS idx_dm_sender ON public.direct_messages(sender_id);
+CREATE INDEX IF NOT EXISTS idx_dm_receiver ON public.direct_messages(receiver_id);
+CREATE INDEX IF NOT EXISTS idx_dm_created ON public.direct_messages(created_at);
 
 ALTER PUBLICATION supabase_realtime ADD TABLE public.direct_messages;
 
@@ -2006,7 +2007,7 @@ CREATE TRIGGER on_new_direct_message
 -- Migration: 20260407205514_b221cf6e-9e4d-42d0-8cfe-96fc229460cb.sql
 -- =============================================
 
-ALTER TABLE public.profiles ADD COLUMN custom_status text DEFAULT NULL;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS custom_status text DEFAULT NULL;
 
 -- =============================================
 -- Migration: 20260408002141_c0817b72-27ef-44cc-ac42-37bd4de9baf2.sql
@@ -2338,7 +2339,7 @@ BEGIN
   INSERT INTO public.notifications (user_id, title, message, type, data)
   VALUES (
     _inviter_id,
-    'Invite accepted! ÃƒÂ°Ã…Â¸Ã…Â½Ã¢â‚¬Â°',
+    'Invite accepted! ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â½ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°',
     COALESCE(_invitee_name, 'A new student') || ' joined LunchLIT using your invite link.',
     'referral_accepted',
     jsonb_build_object('invitee_id', _invitee)
@@ -2376,7 +2377,7 @@ BEGIN
   INSERT INTO public.notifications (user_id, title, message, type, data)
   VALUES (
     _inviter,
-    'A friend unlocked a badge! ÃƒÂ°Ã…Â¸Ã‚ÂÃ¢â‚¬Â¦',
+    'A friend unlocked a badge! ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦',
     COALESCE(_friend_name, 'A friend you invited') || ' just unlocked the "' || NEW.badge_key || '" badge.',
     'friend_badge',
     jsonb_build_object('friend_id', NEW.user_id, 'badge_key', NEW.badge_key)
