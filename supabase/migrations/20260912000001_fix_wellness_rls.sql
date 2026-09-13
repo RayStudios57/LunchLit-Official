@@ -1,4 +1,4 @@
-﻿-- Fix: wellness_logs RLS policies and unique constraint
+-- Fix: wellness_logs RLS policies and unique constraint
 -- This migration ensures the wellness tab buttons (mood, water tracker) work correctly
 
 -- 1. Ensure RLS is enabled on wellness_logs
@@ -30,7 +30,7 @@ CREATE POLICY "Users can delete own wellness logs"
   USING (auth.uid() = user_id);
 
 -- 4. Ensure the unique constraint exists (required for upsert onConflict: 'user_id,log_date')
-DO 
+DO $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM pg_constraint
@@ -40,4 +40,5 @@ BEGIN
     ALTER TABLE public.wellness_logs
       ADD CONSTRAINT wellness_logs_user_id_log_date_key UNIQUE (user_id, log_date);
   END IF;
-END ;
+END $$;
+
