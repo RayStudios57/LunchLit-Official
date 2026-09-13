@@ -7,7 +7,7 @@
   <a href="https://discord.com/invite/kadwmd6xp4"><img src="https://img.shields.io/badge/Discord-Join%20Community-7289DA?style=for-the-badge&logo=discord&logoColor=white" alt="Discord Community"></a>
   <a href="https://www.youtube.com/@Raystudios"><img src="https://img.shields.io/badge/YouTube-Watch%20Demos-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube Channel"></a>
 </p>
-* 🏆 **Congressional App Challenge 2026:** LunchLit has officially been submitted to the Congressional App Challenge! Wish me luck as the judging process begins!
+🏆 **Congressional App Challenge 2026:** LunchLit has officially been submitted to the Congressional App Challenge! Wish me luck as the judging process begins!
 <p align="center">
   <b>The all-in-one student life platform that brings scheduling, study tools, wellness, and college prep together.</b>
 </p>
