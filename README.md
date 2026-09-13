@@ -4,6 +4,7 @@
   <img src="https://img.shields.io/badge/Version-1.1-blue?style=for-the-badge&logo=appveyor" alt="Version 1.1">
   <img src="https://img.shields.io/badge/Platform-Web-green?style=for-the-badge" alt="Platform Web">
   <img src="https://img.shields.io/badge/Status-Live-success?style=for-the-badge" alt="Status Live">
+
   <a href="https://discord.com/invite/kadwmd6xp4"><img src="https://img.shields.io/badge/Discord-Join%20Community-7289DA?style=for-the-badge&logo=discord&logoColor=white" alt="Discord Community"></a>
   <a href="https://www.youtube.com/@Raystudios"><img src="https://img.shields.io/badge/YouTube-Watch%20Demos-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube Channel"></a>
 </p>
@@ -13,9 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://lunch-lit.vercel.app"><b>🚀 Open Live App</b></a> •
-  <a href="https://discord.com/invite/kadwmd6xp4"><b>💬 Join Discord</b></a> •
-  <a href="https://www.youtube.com/@Raystudios"><b>📺 Watch on YouTube</b></a>
+  <a href="https://lunchlit.vercel.app"><b>🚀 Open Live App</b></a> •
 </p>
 
 ---
