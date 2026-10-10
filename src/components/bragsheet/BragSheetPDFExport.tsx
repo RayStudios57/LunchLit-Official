@@ -40,6 +40,36 @@ const categoryLabels: Record<BragCategory, string> = {
   other: 'Other Activities',
 };
 
+// Strip emoji + invisible chars + replace non-WinAnsi punctuation so jsPDF's
+// standard fonts don't render gibberish boxes/letters or stray kerning.
+const safe = (text: string | undefined | null): string => {
+  if (!text) return '';
+  return String(text)
+    .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+    .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/\u2022/g, '-')
+    .replace(/\u2192/g, '->')
+    .replace(/\u25B8/g, '>')
+    .replace(/\u2713/g, 'v')
+    // Strip emoji / pictographs / symbols
+    .replace(
+      /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F2FF}\uFE0F\u200D]/gu,
+      ''
+    )
+    // Strip zero-width / invisible / BOM / soft-hyphen characters that
+    // confuse jsPDF spacing and cause "weird letters" between glyphs.
+    .replace(/[\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u206F\uFEFF]/g, '')
+    // Strip control chars (except newline/tab)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+    // Strip any remaining non-ASCII (jsPDF standard fonts are WinAnsi)
+    .replace(/[^\x00-\xFF]/g, '')
+    // Collapse runs of ASCII whitespace so monkey-patched titles don't
+    // gain extra spaces from stripped icons (e.g. "📚  ACADEMIC").
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim();
+};
+
 export function BragSheetPDFExport({ entries, entriesByYear, profile, academics, insights = [] }: BragSheetPDFExportProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -347,36 +377,6 @@ export function BragSheetPDFExport({ entries, entriesByYear, profile, academics,
     } catch {
       return null;
     }
-  };
-
-  // Strip emoji + invisible chars + replace non-WinAnsi punctuation so jsPDF's
-  // standard fonts don't render gibberish boxes/letters or stray kerning.
-  const safe = (text: string | undefined | null): string => {
-    if (!text) return '';
-    return String(text)
-      .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
-      .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
-      .replace(/[\u2013\u2014]/g, '-')
-      .replace(/\u2022/g, '-')
-      .replace(/\u2192/g, '->')
-      .replace(/\u25B8/g, '>')
-      .replace(/\u2713/g, 'v')
-      // Strip emoji / pictographs / symbols
-      .replace(
-        /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F2FF}\uFE0F\u200D]/gu,
-        ''
-      )
-      // Strip zero-width / invisible / BOM / soft-hyphen characters that
-      // confuse jsPDF spacing and cause "weird letters" between glyphs.
-      .replace(/[\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u206F\uFEFF]/g, '')
-      // Strip control chars (except newline/tab)
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-      // Strip any remaining non-ASCII (jsPDF standard fonts are WinAnsi)
-      .replace(/[^\x00-\xFF]/g, '')
-      // Collapse runs of ASCII whitespace so monkey-patched titles don't
-      // gain extra spaces from stripped icons (e.g. "📚  ACADEMIC").
-      .replace(/[ \t]{2,}/g, ' ')
-      .trim();
   };
 
   const generateCommonAppPDF = async (doc: any) => {
@@ -928,10 +928,11 @@ export function BragSheetPDFExport({ entries, entriesByYear, profile, academics,
         doc.setTextColor(...textDark);
         doc.setFontSize(10);
         for (const score of academics.test_scores) {
+          const testLabel = (score as any).test_name || score.type || 'Test';
           const scoreText = score.subject
-            ? `${score.type} ${score.subject}: ${score.score}`
-            : `${score.type}: ${score.score}`;
-          doc.text(`▸ ${scoreText}`, margin + 4, yPos);
+            ? `${testLabel} (${score.subject}): ${score.score}`
+            : `${testLabel}: ${score.score}`;
+          doc.text(`- ${scoreText}`, margin + 4, yPos);
           yPos += 5;
         }
         yPos += 4;
@@ -1193,7 +1194,7 @@ export function BragSheetPDFExport({ entries, entriesByYear, profile, academics,
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button
-          disabled={isGenerating || entries.length === 0}
+          disabled={isGenerating}
           variant="outline"
           className="gap-2"
         >

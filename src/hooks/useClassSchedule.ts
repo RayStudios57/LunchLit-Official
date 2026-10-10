@@ -5,6 +5,8 @@ import { useToast } from '@/hooks/use-toast';
 import { usePresentationMode } from '@/contexts/PresentationModeContext';
 import { dummyClassSchedule } from '@/data/presentationDummyData';
 
+export type BlockType = 'academic' | 'lunch' | 'free' | 'club';
+
 export interface ClassSchedule {
   id: string;
   user_id: string;
@@ -17,7 +19,9 @@ export interface ClassSchedule {
   color: string;
   is_club?: boolean | null;
   show_every_day?: boolean | null;
-  rotation_day?: 'all' | 'A' | 'B' | string;
+  rotation_day?: 'all' | 'A' | 'B' | 'Gold' | 'Blue' | 'Anchor' | string;
+  block_type?: BlockType | string | null;
+  period_number?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -47,13 +51,23 @@ export function useClassSchedule() {
   const addClass = useMutation({
     mutationFn: async (classData: Omit<ClassSchedule, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
       if (!user) throw new Error('Not authenticated');
-      const { data, error } = await supabase
+      let res = await supabase
         .from('class_schedules')
-        .insert({ ...classData, user_id: user.id })
+        .insert({ ...classData, user_id: user.id } as any)
         .select()
         .single();
-      if (error) throw error;
-      return data;
+      
+      if (res.error && (res.error.message?.includes('column') || res.error.message?.includes('schema'))) {
+        const { block_type, period_number, ...fallbackData } = classData as any;
+        res = await supabase
+          .from('class_schedules')
+          .insert({ ...fallbackData, user_id: user.id } as any)
+          .select()
+          .single();
+      }
+
+      if (res.error) throw res.error;
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['class_schedules'] });

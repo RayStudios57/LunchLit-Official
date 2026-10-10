@@ -20,15 +20,23 @@ import { Label } from '@/components/ui/label';
 
 import { useBragSheetAcademics } from '@/hooks/useBragSheetAcademics';
 import { useBragSheetInsights } from '@/hooks/useBragSheetInsights';
+import { usePresentationMode } from '@/contexts/PresentationModeContext';
+import { dummyProfile, dummyAcademics, dummyInsights } from '@/data/presentationDummyData';
 
 export function BragSheetView() {
   const { user } = useAuth();
   const { profile } = useProfile();
+  const { isPresentationMode } = usePresentationMode();
   const { entries, entriesByYear, stats, isLoading } = useBragSheet();
-  const { academics } = useBragSheetAcademics();
-  const { insights } = useBragSheetInsights();
+  const { academics: dbAcademics } = useBragSheetAcademics();
+  const { insights: dbInsights } = useBragSheetInsights();
   const [isAddingEntry, setIsAddingEntry] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'activities' | 'awards' | 'insights'>('overview');
+
+  const displayUser = user || (isPresentationMode ? { id: 'demo-user', email: 'krishna@lunchlit.app' } : null);
+  const displayProfile = profile || (isPresentationMode ? dummyProfile : null);
+  const academics = dbAcademics || (isPresentationMode ? dummyAcademics : null);
+  const insights = dbInsights && dbInsights.length > 0 ? dbInsights : (isPresentationMode ? dummyInsights : []);
 
   // Filter entries by category
   const activityEntries = entries.filter(e => 
@@ -36,14 +44,14 @@ export function BragSheetView() {
   );
   const awardEntries = entries.filter(e => e.category === 'award' || e.category === 'academic');
 
-  if (!user) {
+  if (!displayUser) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <Trophy className="w-16 h-16 text-muted-foreground mb-4" />
         <h2 className="text-2xl font-display font-bold mb-2">Your Brag Sheet</h2>
         <p className="text-muted-foreground mb-6 max-w-md">
-          Track your achievements, activities, and accomplishments throughout high school. 
-          Perfect for college applications!
+          Track your achievements, activities, and accomplishments throughout school. 
+          Perfect for college and honors applications!
         </p>
         <Button asChild>
           <Link to="/auth">Sign in to access LunchLit</Link>
@@ -65,23 +73,23 @@ export function BragSheetView() {
                 <User className="w-8 h-8 text-primary" />
               </div>
               <div>
-                <h1 className="text-2xl font-display font-bold">{profile?.full_name || 'Student'}</h1>
+                <h1 className="text-2xl font-display font-bold">{displayProfile?.full_name || 'Student'}</h1>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                   <span className="flex items-center gap-1">
                     <Mail className="w-4 h-4" />
-                    {user.email}
+                    {displayUser?.email}
                   </span>
-                  {profile?.grade_level && (
+                  {displayProfile?.grade_level && (
                     <span className="flex items-center gap-1">
                       <GraduationCap className="w-4 h-4" />
-                      {profile.grade_level}
+                      {displayProfile.grade_level}
                     </span>
                   )}
                 </div>
               </div>
             </div>
             <div className="flex gap-2">
-              <BragSheetPDFExport entries={entries} entriesByYear={entriesByYear} profile={profile} academics={academics} insights={insights} />
+              <BragSheetPDFExport entries={entries} entriesByYear={entriesByYear} profile={displayProfile} academics={academics} insights={insights} />
               <Dialog open={isAddingEntry} onOpenChange={setIsAddingEntry}>
                 <DialogTrigger asChild>
                   <Button>

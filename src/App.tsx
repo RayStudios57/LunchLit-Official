@@ -17,6 +17,7 @@ import About from "./pages/About";
 import SecretWarning from "./pages/SecretWarning";
 import NotFound from "./pages/NotFound";
 import ResetPassword from "./pages/ResetPassword";
+import LandingPage from "@/components/landing/LandingPage";
 import { HiddenCornerAnchor } from "@/components/HiddenCornerAnchor";
 import { ConsoleDetector } from "@/components/ConsoleDetector";
 import { GrandmasterCelebration } from "@/components/GrandmasterCelebration";
@@ -50,6 +51,8 @@ const App = () => (
                   <Route path="/menu-upload" element={<MenuUpload />} />
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/about" element={<About />} />
+                  <Route path="/landing" element={<LandingPage />} />
+                  <Route path="/welcome" element={<LandingPage />} />
                   <Route path="/secret-warning" element={<SecretWarning />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="*" element={<NotFound />} />

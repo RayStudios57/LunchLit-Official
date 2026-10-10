@@ -13,12 +13,7 @@ import { SettingsView } from '@/components/settings/SettingsView';
 import { DiscussionView } from '@/components/discussion/DiscussionView';
 import { TodayWidget } from '@/components/dashboard/TodayWidget';
 import { GpaCalculatorWidget } from '@/components/dashboard/GpaCalculatorWidget';
-import { PomodoroTimer } from '@/components/dashboard/PomodoroTimer';
-import { MotivationalQuote } from '@/components/dashboard/MotivationalQuote';
-import { WellnessStats } from '@/components/wellness/WellnessStats';
-import { PwaInstallButton } from '@/components/dashboard/PwaInstallButton';
-import { WellnessBanner } from '@/components/wellness/WellnessBanner';
-import { GraduationCountdown } from '@/components/dashboard/GraduationCountdown';
+import { TodayDashboard } from '@/components/dashboard/TodayDashboard';
 import { GradeSelectionModal } from '@/components/onboarding/GradeSelectionModal';
 import { OnboardingTutorial } from '@/components/onboarding/OnboardingTutorial';
 import { BragSheetView } from '@/components/bragsheet/BragSheetView';
@@ -119,29 +114,8 @@ const Index = () => {
         <main className="container py-6">
           {activeTab === 'home' && (
             <div className="space-y-6">
-              <WellnessBanner />
-              {user && <PwaInstallButton />}
               <AuthOverlay isAuthenticated={!!user}>
-                <MotivationalQuote />
-              </AuthOverlay>
-              <AuthOverlay isAuthenticated={!!user}>
-                <TodayWidget />
-              </AuthOverlay>
-              <AuthOverlay isAuthenticated={!!user}>
-                <TodayView 
-                  onNavigateToMenu={() => setActiveTab('menu')} 
-                  onNavigateToStudy={() => setActiveTab('study')} 
-                  onNavigate={(tab) => setActiveTab(tab as TabType)}
-                />
-              </AuthOverlay>
-              <AuthOverlay isAuthenticated={!!user}>
-                <WellnessStats />
-              </AuthOverlay>
-              <AuthOverlay isAuthenticated={!!user}>
-                <PomodoroTimer />
-              </AuthOverlay>
-              <AuthOverlay isAuthenticated={!!user}>
-                <GraduationCountdown />
+                <TodayDashboard onNavigate={(tab) => setActiveTab(tab as TabType)} />
               </AuthOverlay>
               <Credits />
             </div>
