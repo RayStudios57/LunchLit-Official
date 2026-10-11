@@ -4,9 +4,10 @@
   <img src="https://img.shields.io/badge/Version-1.2-blue?style=for-the-badge&logo=appveyor" alt="Version 1.2">
   <img src="https://img.shields.io/badge/Platform-Web-green?style=for-the-badge" alt="Platform Web">
   <img src="https://img.shields.io/badge/Status-Live-success?style=for-the-badge" alt="Status Live">
-
 </p>
+
 🏆 LunchLit has officially been submitted to the Congressional App Challenge for 2026! Wish me luck as the judging process begins!
+
 <p align="center">
   <b>The all-in-one student life platform that brings scheduling, study tools, wellness, and college prep together.</b>
 </p>
@@ -27,51 +28,53 @@
 
 ---
 
-## ✨ Features
+## ✨ Features (v1.2 Updates)
 
-### 📅 Daily Planning
-* **Today Dashboard:** Displays classes, tasks, GPA, wellness stats, and reminders at a glance.
-* **Focus Engine:** Built-in Pomodoro timer with optional lofi music streams.
-* **Quick Overview:** Daily motivational quotes and instant clarity for fast check-ins.
+### 📅 Daily Planning & Today Dashboard
+- **Dynamic Hero Section:** Real-time current class/period tracker featuring a live countdown progress bar to the next bell and "Up Next" preview guidance.
+- **Unified Action Hub:** Combines daily focus intention ("Today's #1 Priority"), interactive task checklists pulling from your classes, and a 48-hour exam radar.
+- **Elevated Focus Bar:** Quick-launch Pomodoro timer (Focus/Short Break/Long Break) with subject tagging and integrated lofi music streams.
+- **Quick Win Capture:** One-tap modal to instantly log achievements and milestones directly to your Brag Sheet.
 
-### 📝 Tasks & Schedules
-* **Schedule Management:** Create and track class schedules with full details.
-* **Assignment Tracker:** Organize tasks by due date, priority, and category with auto-reminders.
+### 📝 Classes & Schedules
+- **Advanced Block & Period Management:** Custom categorization for Standard Classes, Lunch Blocks, Passing/Advisory Periods, and Clubs/Extracurriculars.
+- **Rotation Schedules:** Seamless toggle support for Gold/Blue days and alternative block schedules.
+- **Smart GPA Calculator & Sync:** OCR grade scanning with graceful manual fallbacks, automatic GPA calculations, and seamless cross-tab synchronization with the Brag Sheet and College Prep modules.
 
 ### 💚 Wellness & Fitness
-* **Nutrition & Mindset:** Healthy snack ideas, brain-food tips, daily mood trend charts, and guided breathing exercises.
-* **Hydration Tracker:** Log daily intake with periodic reminders and monthly totals.
-* **AI Gym Scanner:** Scan gym equipment with your camera to instantly learn how to use it.
-* **Custom Routines:** AI-generated workout plans, age-adjusted goals, rest timers, and streak rewards.
+- **Nutrition & Mindset:** Healthy snack ideas, brain-food tips, daily mood trend charts, and guided breathing exercises.
+- **Hydration Tracker:** Log daily intake with periodic reminders and monthly totals.
+- **AI Gym Scanner:** Scan gym equipment with your camera to instantly learn how to use it.
+- **Custom Routines:** AI-generated workout plans, age-adjusted goals, rest timers, and streak rewards.
 
 ### 📚 Study Tools & Gamification
-* **Productivity Analytics:** Study stats dashboard with visual charts and trends over time.
-* **54 Unlockable Badges:** Progress tracking across 16 categories, including the *LunchLit Master* milestone.
-* **Streak Rewards:** Earn badges and stay motivated with daily activity tracking.
+- **Productivity Analytics:** Study stats dashboard with visual charts and trends over time.
+- **54 Unlockable Badges:** Progress tracking across 16 categories, including the *LunchLit Master* milestone.
+- **Streak Rewards:** Earn badges and stay motivated with daily activity tracking.
 
 ### 🎓 College Preparation
-* **Brag Sheet Builder:** Auto-organize achievements, clubs, and volunteering by grade level.
-* **PDF Export:** Export polished portfolios ready for the Common App.
-* **Future Planning:** Target college lists, goal setting, and a Strengths Finder tool.
+- **Brag Sheet Builder:** Auto-organize achievements, clubs, and volunteering by grade level.
+- **PDF Export:** Export polished portfolios ready for the Common App.
+- **Future Planning:** Target college lists, goal setting, and a Strengths Finder tool.
 
 ### 💬 Community & AI Support
-* **AI Study Chat:** Context-aware homework helper with saved conversation history.
-* **Discussion Boards:** School-based communication system with threaded replies.
-* **Tutor Directory:** Browse and filter school or online tutors by subject, ratings, and availability.
+- **AI Study Chat:** Context-aware homework helper with saved conversation history.
+- **Discussion Boards:** School-based communication system with threaded replies.
+- **Tutor Directory:** Browse and filter school or online tutors by subject, ratings, and availability.
 
 ### 🎨 Customization & System Controls
-* **6 Custom Themes:** Choose from *Ocean, Forest, Sunset, Midnight, Lavender,* and *Emerald* in light or dark mode.
-* **Role Management:** Built-in views for Students, Teachers, Counselors, and Admins.
-* **Multi-School Ready:** Domain management, study hall controls, and presentation modes.
+- **6 Custom Themes:** Choose from *Ocean, Forest, Sunset, Midnight, Lavender,* and *Emerald* in light or dark mode.
+- **Role Management:** Built-in views for Students, Teachers, Counselors, and Admins.
+- **Multi-School Ready:** Domain management, study hall controls, and presentation modes.
 
 ---
 
 ## ⚡ Technical Highlights
 
-* 🌐 **Responsive Web Application** — Accessible across phone, tablet, and desktop browsers.
-* 🔐 **Google OAuth** — Quick and secure sign-in experience.
-* ⚡ **Real-Time Data** — Live synchronization for study halls and discussion boards.
-* 🔒 **Privacy-First** — Full user control over data management and deletion.
+- 🌐 **Responsive Web Application** — Accessible across phone, tablet, and desktop browsers.
+- 🔐 **Google OAuth** — Quick and secure sign-in experience.
+- ⚡ **Real-Time Data** — Live synchronization for study halls and discussion boards.
+- 🔒 **Privacy-First** — Full user control over data management and deletion.
 
 ---
 
@@ -79,8 +82,8 @@
 
 Stay connected with the LunchLit community and check out video guides and project updates:
 
-* 💬 **[Join our Discord Server](https://discord.com/invite/kadwmd6xp4):** Connect with other students, get support, share feedback, and test new updates early.
-* 📺 **[Subscribe on YouTube](https://www.youtube.com/@Raystudios):** Watch video walkthroughs, feature showcases, and development updates.
+- 💬 **[Join our Discord Server](https://discord.com/invite/kadwmd6xp4):** Connect with other students, get support, share feedback, and test new updates early.
+- 📺 **[Subscribe on YouTube](https://www.youtube.com/@Raystudios):** Watch video walkthroughs, feature showcases, and development updates.
 
 ---
 
