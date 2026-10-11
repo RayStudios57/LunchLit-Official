@@ -1,7 +1,7 @@
 # 📘 LunchLit
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-1.1-blue?style=for-the-badge&logo=appveyor" alt="Version 1.1">
+  <img src="https://img.shields.io/badge/Version-1.1-blue?style=for-the-badge&logo=appveyor" alt="Version 1.2">
   <img src="https://img.shields.io/badge/Platform-Web-green?style=for-the-badge" alt="Platform Web">
   <img src="https://img.shields.io/badge/Status-Live-success?style=for-the-badge" alt="Status Live">
 
