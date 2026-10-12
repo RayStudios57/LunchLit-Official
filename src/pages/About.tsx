@@ -8,9 +8,21 @@ import { CreatorSocialLinks } from '@/components/about/CreatorSocialLinks';
 import { SuggestionsSection } from '@/components/about/SuggestionsSection';
 import { Separator } from '@/components/ui/separator';
 
-const CURRENT_VERSION = '1.1';
+const CURRENT_VERSION = '1.2';
 
 const changelogData = [{
+  version: '1.2',
+  date: 'October 2026',
+  changes: [
+    '🚀 Major Today Screen Overhaul: Dynamic hero section with real-time class tracking, live bell countdown, and "Up Next" preview guidance',
+    '🔗 Unified Action Hub: Merged Today\'s #1 Focus with an interactive task checklist and 48-hour exam radar',
+    '⏱️ Elevated Pomodoro Study Bar: Quick-launch timers with subject tagging and integrated lofi music streams',
+    '🏆 Brag Sheet Quick-Capture: One-tap "+ Log Daily Win" modal to instantly record achievements on the fly',
+    '🏫 Advanced Classes & Schedule Management: Native support for Lunch Blocks, Passing/Advisory Periods, and Extracurricular Clubs',
+    '🔄 Rotation Schedules: Seamless toggle support for Gold/Blue days and alternative block schedules',
+    '📊 Smart GPA & Sync Fixes: Resolved OCR grade scanning Edge Function errors with graceful manual fallbacks and fixed cross-tab data sync for College Prep & Brag Sheet'
+  ]
+}, {
   version: '1.1',
   date: 'May 2026',
   changes: [
@@ -139,7 +151,7 @@ export default function About() {
       <div className="container py-8 max-w-3xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-3">
-          <h1 className="font-display text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Version 1.1
+          <h1 className="font-display text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Version 1.2
 
           </h1>
           <p className="text-muted-foreground text-lg">Your daily school companion</p>
@@ -161,7 +173,7 @@ export default function About() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground leading-relaxed">
-            <p>LunchLIT is a comprehensive school companion app designed to help students manage their daily school life — from checking the lunch menu and tracking assignments, to finding study halls, building college brag sheets, and now even staying healthy with nutrition and fitness tools.</p>
+            <p>LunchLIT is a comprehensive school companion app designed to help students manage their daily school life — from checking the lunch menu and tracking assignments, to finding study halls, building college brag sheets, and staying healthy with nutrition and fitness tools.</p>
             <p>Built by a student, for students — LunchLit understands the challenges of staying organized, eating well, and staying active during a busy school year. We're here to make your academic journey smoother, healthier, and more enjoyable.</p>
           </CardContent>
         </Card>
@@ -222,7 +234,8 @@ export default function About() {
                     )}
                     </ul>
                   </AccordionContent>
-                </AccordionItem>
+                >
+              </AccordionItem>
               )}
             </Accordion>
           </CardContent>
