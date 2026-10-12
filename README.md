@@ -28,14 +28,17 @@
 
 ---
 
-## ✨ Features (v1.2 Updates)
+## ✨ Features 
+
+(v1.2 Updates)
 
 ### 📅 Daily Planning & Today Dashboard
 - **Dynamic Hero Section:** Real-time current class/period tracker featuring a live countdown progress bar to the next bell and "Up Next" preview guidance.
 - **Unified Action Hub:** Combines daily focus intention ("Today's #1 Priority"), interactive task checklists pulling from your classes, and a 48-hour exam radar.
 - **Elevated Focus Bar:** Quick-launch Pomodoro timer (Focus/Short Break/Long Break) with subject tagging and integrated lofi music streams.
 - **Quick Win Capture:** One-tap modal to instantly log achievements and milestones directly to your Brag Sheet.
-
+------------------------------------------------------------------------------------------------------------------------------------------
+Main Features
 ### 📝 Classes & Schedules
 - **Advanced Block & Period Management:** Custom categorization for Standard Classes, Lunch Blocks, Passing/Advisory Periods, and Clubs/Extracurriculars.
 - **Rotation Schedules:** Seamless toggle support for Gold/Blue days and alternative block schedules.
