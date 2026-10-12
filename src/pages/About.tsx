@@ -122,7 +122,6 @@ const changelogData = [{
 }];
 
 const features = [
-{ icon: Utensils, label: 'Daily Menu', desc: 'View lunch menus with dietary info and allergen warnings' },
 { icon: Heart, label: 'Wellness Hub', desc: 'Mood, hydration, breathing, and easy snacks of the day' },
 { icon: Dumbbell, label: 'Fitness Tools', desc: 'Goal-based recommendations and custom gym routines' },
 { icon: Camera, label: 'Machine Scanner', desc: 'AI explains how to use any gym machine from a photo' },
