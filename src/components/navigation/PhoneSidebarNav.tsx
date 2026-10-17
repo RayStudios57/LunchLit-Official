@@ -99,13 +99,16 @@ export function PhoneSidebarNav({ open, onClose, activeTab, onNavigate }: PhoneS
   };
 
   const handleRedeem = () => {
-    if (redeemSecretCode(code.trim())) {
-      setTheme('matrix' as any);
-      toast.success('⛓️ Matrix Anomaly theme unlocked!');
+    const res = redeemSecretCode(code.trim(), profile?.full_name);
+    if (res.success) {
+      if (res.theme) {
+        setTheme(res.theme as any);
+      }
+      toast.success(res.message);
       setCodeOpen(false);
       setCode('');
     } else {
-      toast.error('Invalid code. The anomaly remains hidden.');
+      toast.error(res.message);
     }
   };
 

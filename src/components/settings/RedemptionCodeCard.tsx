@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Gift, Check } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useProfile } from '@/hooks/useProfile';
 import { redeemSecretCode, isCodeRedeemed } from '@/lib/secrets';
 import { toast } from 'sonner';
 
@@ -14,6 +15,7 @@ import { toast } from 'sonner';
  */
 export function RedemptionCodeCard() {
   const { setTheme } = useTheme();
+  const { profile } = useProfile();
   const [code, setCode] = useState('');
   const [redeemed, setRedeemed] = useState(isCodeRedeemed());
 
@@ -24,13 +26,16 @@ export function RedemptionCodeCard() {
   }, []);
 
   const handleRedeem = () => {
-    if (redeemSecretCode(code.trim())) {
-      setTheme('matrix' as any);
-      toast.success('⛓️ Matrix Anomaly theme unlocked!');
+    const res = redeemSecretCode(code.trim(), profile?.full_name);
+    if (res.success) {
+      if (res.theme) {
+        setTheme(res.theme as any);
+      }
+      toast.success(res.message);
       setRedeemed(true);
       setCode('');
     } else {
-      toast.error('Invalid code. The anomaly remains hidden.');
+      toast.error(res.message);
     }
   };
 
@@ -42,7 +47,7 @@ export function RedemptionCodeCard() {
           Redemption Code
         </CardTitle>
         <CardDescription>
-          Enter a secret code to claim hidden rewards. Case-sensitive.
+          Enter a secret code to claim hidden rewards, themes, and Easter eggs.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -58,7 +63,7 @@ export function RedemptionCodeCard() {
         </div>
         {redeemed && (
           <p className="text-xs text-primary flex items-center gap-1">
-            <Check className="w-3.5 h-3.5" /> Secret code already redeemed — Matrix Anomaly theme available.
+            <Check className="w-3.5 h-3.5" /> Secret code redeemed — hidden features unlocked!
           </p>
         )}
       </CardContent>
