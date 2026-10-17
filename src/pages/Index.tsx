@@ -28,6 +28,7 @@ import { Helmet } from 'react-helmet';
 import { LandingPage } from '@/components/landing/LandingPage';
 import { useNavigate } from 'react-router-dom';
 import { PhoneSidebarNav } from '@/components/navigation/PhoneSidebarNav';
+import { MobileBottomNav } from '@/components/navigation/MobileBottomNav';
 import { getNavLayout, NavLayout } from '@/components/Header';
 import { recordViewVisit } from '@/lib/secrets';
 
@@ -111,7 +112,7 @@ const Index = () => {
           />
         )}
         
-        <main className="container py-6">
+        <main className="container py-4 md:py-6 pb-24 md:pb-6">
           {activeTab === 'home' && (
             <div className="space-y-6">
               <AuthOverlay isAuthenticated={!!user}>
@@ -186,6 +187,9 @@ const Index = () => {
             </AuthOverlay>
           )}
         </main>
+
+        {/* Mobile Touch-First Bottom Navigation (hidden on desktop >= 768px) */}
+        <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
 
       <GradeSelectionModal 

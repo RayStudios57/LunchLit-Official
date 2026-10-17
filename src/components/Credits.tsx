@@ -12,11 +12,18 @@ export function Credits() {
           <span className="font-semibold text-foreground">Ramakrishna Krishna</span>
         </div>
       </div>
-      <Button variant="outline" size="sm" asChild>
-        <Link to="/about" className="flex items-center gap-1.5">
-          <Info className="h-3.5 w-3.5" />
-          About LunchLit
-        </Link>
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/privacy" className="text-xs text-muted-foreground hover:text-foreground">
+            Privacy
+          </Link>
+        </Button>
+        <Button variant="outline" size="sm" asChild>
+          <Link to="/about" className="flex items-center gap-1.5">
+            <Info className="h-3.5 w-3.5" />
+            About LunchLit
+          </Link>
+        </Button>
+      </div>
     </div>);
 }

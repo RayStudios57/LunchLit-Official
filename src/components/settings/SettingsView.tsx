@@ -23,7 +23,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Camera, Sun, Moon, Monitor, Check, Palette, School, GraduationCap, User, Users, Calendar, Trash2, Download, AlertTriangle, ChevronUp, ChevronDown, RotateCcw, Presentation, HelpCircle, Award, Eye, LayoutGrid, Menu, MessageSquare } from 'lucide-react';
+import { Camera, Sun, Moon, Monitor, Check, Palette, School, GraduationCap, User, Users, Calendar, Trash2, Download, AlertTriangle, ChevronUp, ChevronDown, RotateCcw, Presentation, HelpCircle, Award, Eye, LayoutGrid, Menu, MessageSquare, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
@@ -741,6 +741,25 @@ export function SettingsView() {
       </Card>
 
       <OnboardingTutorial open={showTutorial} onComplete={() => setShowTutorial(false)} />
+
+      {/* Privacy & Legal */}
+      <Card className="card-elevated">
+        <CardHeader>
+          <CardTitle className="font-display flex items-center gap-2">
+            <Shield className="w-5 h-5 text-primary" />
+            Privacy & Terms
+          </CardTitle>
+          <CardDescription>Review our privacy policy and student data protections</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button variant="outline" className="w-full" asChild>
+            <Link to="/privacy">
+              <Shield className="w-4 h-4 mr-2 text-primary" />
+              View Privacy Policy
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Danger Zone */}
       <Card className="card-elevated border-destructive/30">

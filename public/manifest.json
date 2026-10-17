@@ -1,0 +1,30 @@
+{
+  "short_name": "LunchLit",
+  "name": "LunchLit - Your Daily School Companion",
+  "description": "All-in-one student companion for class schedules, tasks, wellness, brag sheets, and college prep.",
+  "icons": [
+    {
+      "src": "/logos/logo-default.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/logos/logo-default.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/logos/logo-default.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "display": "standalone",
+  "orientation": "portrait",
+  "categories": ["education", "productivity"]
+}

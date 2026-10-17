@@ -63,31 +63,31 @@ export function Header({ activeTab, onTabChange, onOpenSidebar }: HeaderProps) {
   const secondaryTabs = allTabs.slice(5, 11); // exclude settings
 
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-      <div className="container py-3">
+    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border pt-[env(safe-area-inset-top,0px)]">
+      <div className="container py-2.5 md:py-3">
         {/* Top Bar */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {navLayout === 'sidebar' && (
-              <Button variant="ghost" size="sm" className="p-2" onClick={onOpenSidebar}>
+              <Button variant="ghost" size="sm" className="p-2 min-h-[44px] min-w-[44px]" onClick={onOpenSidebar}>
                 <Menu className="w-5 h-5" />
               </Button>
             )}
-            <button onClick={() => onTabChange('home')} className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+            <button onClick={() => onTabChange('home')} className="flex items-center gap-2.5 sm:gap-3 hover:opacity-90 transition-opacity min-h-[44px]">
               <ThemeLogo size="md" />
-              <div className="hidden sm:block">
-                <h1 className="font-display font-bold text-lg text-foreground leading-tight text-left">LunchLIT</h1>
-                <p className="text-xs text-muted-foreground">Your school companion</p>
+              <div>
+                <h1 className="font-display font-bold text-base sm:text-lg text-foreground leading-tight text-left">LunchLIT</h1>
+                <p className="text-[11px] sm:text-xs text-muted-foreground leading-none">Your school companion</p>
               </div>
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {user && <NotificationBell />}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="gap-2">
+                  <Button variant="ghost" size="sm" className="gap-2 min-h-[44px] px-2 sm:px-3">
                     <Avatar className="w-7 h-7">
                       <AvatarImage src={profile?.avatar_url || undefined} />
                       <AvatarFallback className="text-xs bg-primary text-primary-foreground">
@@ -132,7 +132,7 @@ export function Header({ activeTab, onTabChange, onOpenSidebar }: HeaderProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="default" size="sm" asChild>
+              <Button variant="default" size="sm" className="min-h-[44px]" asChild>
                 <Link to="/auth">
                   <LogIn className="h-4 w-4 mr-1" />
                   Sign In
@@ -142,9 +142,9 @@ export function Header({ activeTab, onTabChange, onOpenSidebar }: HeaderProps) {
           </div>
         </div>
 
-        {/* Navigation - Tab Mode */}
+        {/* Navigation - Tab Mode (Rendered exclusively on desktop viewports >= 768px) */}
         {navLayout === 'tabs' && (
-          <nav className="flex gap-1 mt-3 bg-secondary/50 p-1 rounded-xl">
+          <nav className="hidden md:flex gap-1 mt-3 bg-secondary/50 p-1 rounded-xl">
             {primaryTabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
