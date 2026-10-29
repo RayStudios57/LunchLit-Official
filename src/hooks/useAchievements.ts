@@ -33,6 +33,7 @@ interface BadgeContext {
   workoutStreak: number;
   taskStreak: number;
   wellnessDays: number;
+  pomodoroSessions: number;
 }
 
 // ── Track a simple consecutive-day task streak in localStorage ──
@@ -127,8 +128,8 @@ export const BADGES: Badge[] = [
   { key: 'customizer', name: 'Customizer', description: 'Change your theme from the default', icon: '🎨', category: 'settings', check: () => false },
 
   // ──── Pomodoro ────
-  { key: 'focus_starter', name: 'Focus Starter', description: 'Complete your first Pomodoro session', icon: '🍅', category: 'pomodoro', check: () => false },
-  { key: 'focus_master', name: 'Focus Master', description: 'Complete 10 Pomodoro sessions', icon: '🧘', category: 'pomodoro', check: () => false },
+  { key: 'focus_starter', name: 'Focus Starter', description: 'Complete your first Pomodoro session', icon: '🍅', category: 'pomodoro', check: ctx => ctx.pomodoroSessions >= 1 },
+  { key: 'focus_master', name: 'Focus Master', description: 'Complete 10 Pomodoro sessions', icon: '🧘', category: 'pomodoro', check: ctx => ctx.pomodoroSessions >= 10 },
 
   // ──── Tutoring ────
   { key: 'tutor_helper', name: 'Tutor Helper', description: 'Add yourself as a tutor', icon: '🎓', category: 'tutoring', check: () => false },
@@ -218,6 +219,7 @@ export function useAchievements() {
     workoutStreak: dayStreak,
     taskStreak: recordTaskStreak(completedTasks),
     wellnessDays: uniqueWorkoutDays,
+    pomodoroSessions: parseInt(localStorage.getItem('lunchlit_pomodoro_total_sessions') || '0', 10),
   }), [tasks, entries, logs, dayStreak, completedTasks, uniqueWorkoutDays]);
 
   // Auto-check for new badges

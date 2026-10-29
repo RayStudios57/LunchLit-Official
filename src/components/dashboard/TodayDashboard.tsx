@@ -38,26 +38,21 @@ import {
   Utensils,
   ChevronRight,
   Volume2,
+  VolumeX,
+  ShieldCheck,
 } from 'lucide-react';
 import { format, isToday, parseISO, differenceInHours } from 'date-fns';
 import { isRotationEnabled, getRotationLetter, classMatchesRotation } from '@/lib/rotation';
 import { GraduationCountdown } from '@/components/dashboard/GraduationCountdown';
 import { MotivationalQuote } from '@/components/dashboard/MotivationalQuote';
 import { LunchLitV12Banner } from '@/components/dashboard/LunchLitV12Banner';
+import { usePomodoro, PomodoroMode, POMODORO_LABELS } from '@/hooks/usePomodoro';
+import { useStudyAudio } from '@/hooks/useStudyAudio';
 import { toast } from 'sonner';
 
 interface TodayDashboardProps {
   onNavigate: (tab: string) => void;
 }
-
-// Curated YouTube lofi tracks for background study
-const LOFI_TRACKS = [
-  { label: '☕ Lofi Chill (Lofi Girl radio)', list: 'PLOzDu-MXXLliO9fBNZOQTBDddoA3FzZUo' },
-  { label: '🌧️ Rain & Jazz Focus', id: 'DWcJFNfaw9c' },
-  { label: '🌿 Nature Ambient (Forest)', id: 'xNN7iTA57jM' },
-  { label: '🎹 Piano Study Focus', id: 'lFcSrYw-ARY' },
-  { label: '🌙 Midnight Lofi Beats', id: '28KRPhVzCus' },
-];
 
 export function TodayDashboard({ onNavigate }: TodayDashboardProps) {
   return (
@@ -585,73 +580,45 @@ function CombinedActionHub({ onNavigate }: { onNavigate: (tab: string) => void }
 // =========================================================================
 function IntegratedStudyBar({ onNavigate }: { onNavigate: (tab: string) => void }) {
   const { classes } = useClassSchedule();
-  const [mode, setMode] = useState<'work' | 'short_break' | 'long_break'>('work');
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
-  const [isRunning, setIsRunning] = useState(false);
-  const [selectedSubject, setSelectedSubject] = useState<string>('General Study');
-  const [sessionsCompleted, setSessionsCompleted] = useState<number>(() => {
-    const todayKey = `pomodoro_sessions_${format(new Date(), 'yyyy-MM-dd')}`;
-    return parseInt(localStorage.getItem(todayKey) || '1', 10);
-  });
+  const {
+    mode,
+    timeLeft,
+    isRunning,
+    selectedSubject,
+    sessionsCompleted,
+    minutes,
+    seconds,
+    progressPercent,
+    notificationPermission,
+    requestNotificationPermission,
+    start,
+    pause,
+    reset,
+    setMode,
+    setSubject,
+  } = usePomodoro();
 
-  // Lofi audio state
-  const [lofiOn, setLofiOn] = useState(false);
-  const [selectedTrack, setSelectedTrack] = useState(LOFI_TRACKS[0].label);
-
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const durations = {
-    work: 25 * 60,
-    short_break: 5 * 60,
-    long_break: 15 * 60,
-  };
-
-  const setPreset = (m: 'work' | 'short_break' | 'long_break') => {
-    setMode(m);
-    setTimeLeft(durations[m]);
-    setIsRunning(false);
-  };
-
-  useEffect(() => {
-    if (isRunning) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            setIsRunning(false);
-            if (mode === 'work') {
-              const nextSessions = sessionsCompleted + 1;
-              setSessionsCompleted(nextSessions);
-              localStorage.setItem(`pomodoro_sessions_${format(new Date(), 'yyyy-MM-dd')}`, String(nextSessions));
-              toast.success(`⚡ Focus session complete for ${selectedSubject}!`);
-              setPreset('short_break');
-            } else {
-              toast.success('☕ Break finished! Ready to focus again?');
-              setPreset('work');
-            }
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isRunning, mode, sessionsCompleted, selectedSubject]);
-
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
-  const progressPercent = ((durations[mode] - timeLeft) / durations[mode]) * 100;
+  const {
+    isPlaying: audioPlaying,
+    currentTrack,
+    volume,
+    volumePercent,
+    tracks,
+    togglePlay,
+    setTrack,
+    setVolume,
+  } = useStudyAudio();
 
   // Extract unique subjects from user schedule
   const subjectOptions = Array.from(new Set(['General Study', ...classes.map(c => c.class_name)]));
 
   return (
-    <Card className="card-elevated border-border/80">
+    <Card className="card-elevated border-border/80 shadow-md">
       <CardContent className="p-4 sm:p-5 space-y-4">
+        {/* Header Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-0.5">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <h3 className="font-display font-bold text-base text-foreground flex items-center gap-2">
                 <Clock className="w-4 h-4 text-primary" />
                 Pomodoro Focus &amp; Study Bar
@@ -659,15 +626,33 @@ function IntegratedStudyBar({ onNavigate }: { onNavigate: (tab: string) => void 
               <Badge variant="outline" className="text-[10px] font-mono bg-primary/10 text-primary border-primary/20">
                 ⚡ {sessionsCompleted}/4 Completed Today
               </Badge>
+              {notificationPermission !== 'granted' ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={requestNotificationPermission}
+                  className="h-6 text-[10px] gap-1 px-2 text-muted-foreground hover:text-foreground"
+                  title="Enable desktop alerts when tab is in background"
+                >
+                  <Bell className="w-3 h-3" />
+                  <span>Enable Tab Alerts</span>
+                </Button>
+              ) : (
+                <Badge variant="outline" className="text-[10px] text-emerald-600 dark:text-emerald-400 border-emerald-500/20 bg-emerald-500/10 gap-1">
+                  <CheckCircle2 className="w-3 h-3" /> Tab Alerts On
+                </Badge>
+              )}
             </div>
-            <p className="text-xs text-muted-foreground">Stay in the flow and log focused class study sessions</p>
+            <p className="text-xs text-muted-foreground">
+              Runs in background • Live tab title countdown • Subject-linked deep work
+            </p>
           </div>
 
           {/* Subject tag selector */}
           <div className="flex items-center gap-2 shrink-0">
             <span className="text-xs text-muted-foreground font-medium hidden sm:inline">Subject:</span>
-            <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-              <SelectTrigger className="h-8 text-xs w-[160px]">
+            <Select value={selectedSubject} onValueChange={setSubject}>
+              <SelectTrigger className="h-8 text-xs w-[160px] bg-card">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -685,30 +670,19 @@ function IntegratedStudyBar({ onNavigate }: { onNavigate: (tab: string) => void 
         <div className="grid sm:grid-cols-3 gap-4 items-center p-3.5 rounded-xl bg-secondary/40 border border-border/70">
           {/* Preset Buttons */}
           <div className="flex sm:flex-col gap-1.5">
-            <button
-              onClick={() => setPreset('work')}
-              className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-left ${
-                mode === 'work' ? 'bg-primary text-primary-foreground shadow-sm' : 'bg-card hover:bg-card/80 text-foreground'
-              }`}
-            >
-              Focus 25m
-            </button>
-            <button
-              onClick={() => setPreset('short_break')}
-              className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-left ${
-                mode === 'short_break' ? 'bg-primary text-primary-foreground shadow-sm' : 'bg-card hover:bg-card/80 text-foreground'
-              }`}
-            >
-              Short Break 5m
-            </button>
-            <button
-              onClick={() => setPreset('long_break')}
-              className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-left ${
-                mode === 'long_break' ? 'bg-primary text-primary-foreground shadow-sm' : 'bg-card hover:bg-card/80 text-foreground'
-              }`}
-            >
-              Long Break 15m
-            </button>
+            {(['work', 'short_break', 'long_break'] as PomodoroMode[]).map((m) => (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
+                className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-left ${
+                  mode === m
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'bg-card hover:bg-card/80 text-foreground'
+                }`}
+              >
+                {m === 'work' ? 'Focus 25m' : m === 'short_break' ? 'Short Break 5m' : 'Long Break 15m'}
+              </button>
+            ))}
           </div>
 
           {/* Timer Display */}
@@ -716,16 +690,31 @@ function IntegratedStudyBar({ onNavigate }: { onNavigate: (tab: string) => void 
             <div className="font-mono text-4xl sm:text-5xl font-black text-foreground tabular-nums tracking-tight">
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
-            <div className="text-[11px] text-muted-foreground font-medium">
-              Studying: <span className="font-bold text-primary">{selectedSubject}</span>
+            <div className="text-[11px] text-muted-foreground font-medium flex items-center justify-center gap-1.5">
+              <span>Studying:</span>
+              <span className="font-bold text-primary">{selectedSubject}</span>
+              {isRunning && (
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping ml-1" title="Running in background" />
+              )}
+            </div>
+            {/* Visual progress bar */}
+            <div className="w-full bg-secondary/80 rounded-full h-1.5 overflow-hidden mt-1">
+              <div
+                className="bg-primary h-full transition-all duration-1000 ease-linear rounded-full"
+                style={{ width: `${progressPercent}%` }}
+              />
             </div>
           </div>
 
           {/* Action Trigger Buttons */}
           <div className="flex sm:flex-col gap-2 justify-center">
             <Button
-              onClick={() => setIsRunning(!isRunning)}
-              className="flex-1 sm:flex-none gap-2 font-semibold text-xs shadow-sm shadow-primary/20"
+              onClick={isRunning ? pause : start}
+              className={`flex-1 sm:flex-none gap-2 font-semibold text-xs shadow-sm ${
+                isRunning
+                  ? 'bg-amber-600 hover:bg-amber-700 text-white'
+                  : 'shadow-primary/20'
+              }`}
             >
               {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
               {isRunning ? 'Pause' : 'Start Focus'}
@@ -733,38 +722,99 @@ function IntegratedStudyBar({ onNavigate }: { onNavigate: (tab: string) => void 
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setPreset(mode)}
-              className="flex-1 sm:flex-none gap-1.5 text-xs text-muted-foreground"
+              onClick={() => reset()}
+              className="flex-1 sm:flex-none gap-1.5 text-xs text-muted-foreground hover:text-foreground"
             >
               <RotateCcw className="w-3.5 h-3.5" /> Reset
             </Button>
           </div>
         </div>
 
-        {/* Lofi Audio Controls */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-2.5 rounded-lg bg-card border border-border/60 text-xs">
-          <div className="flex items-center gap-2">
-            <Music className="w-4 h-4 text-primary" />
-            <span className="font-semibold text-foreground">Background Lofi Audio</span>
-            <Switch checked={lofiOn} onCheckedChange={setLofiOn} />
+        {/* 100% Royalty-Free Audio Controls */}
+        <div className="space-y-2.5 p-3 rounded-lg bg-card border border-border/70 text-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-primary/10 text-primary">
+                <Music className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-foreground">Study Soundscape &amp; Beats</span>
+                  {audioPlaying && (
+                    <span className="flex items-center gap-0.5 h-3">
+                      <span className="w-0.5 h-2 bg-primary animate-pulse" />
+                      <span className="w-0.5 h-3 bg-primary animate-pulse delay-75" />
+                      <span className="w-0.5 h-1.5 bg-primary animate-pulse delay-150" />
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10px] text-muted-foreground">Plays in background • Procedural lofi &amp; licensed radio</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 self-end sm:self-center">
+              <Switch checked={audioPlaying} onCheckedChange={togglePlay} />
+            </div>
           </div>
 
-          {lofiOn && (
-            <div className="flex items-center gap-2">
-              <Select value={selectedTrack} onValueChange={setSelectedTrack}>
-                <SelectTrigger className="h-7 text-xs w-[200px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {LOFI_TRACKS.map(t => (
-                    <SelectItem key={t.label} value={t.label} className="text-xs">
-                      {t.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          {audioPlaying && (
+            <div className="space-y-2 pt-2 border-t border-border/50">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <Select value={currentTrack.id} onValueChange={setTrack}>
+                  <SelectTrigger className="h-7 text-xs flex-1 bg-background">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    <div className="px-2 py-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                      Procedural Generators (100% Free &amp; Offline)
+                    </div>
+                    {tracks
+                      .filter(t => t.category === 'procedural')
+                      .map(t => (
+                        <SelectItem key={t.id} value={t.id} className="text-xs">
+                          {t.label}
+                        </SelectItem>
+                      ))}
+                    <div className="px-2 py-1 pt-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-t border-border/40">
+                      Licensed Internet Radio (SomaFM)
+                    </div>
+                    {tracks
+                      .filter(t => t.category === 'stream')
+                      .map(t => (
+                        <SelectItem key={t.id} value={t.id} className="text-xs">
+                          {t.label}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Volume slider */}
+                <div className="flex items-center gap-2 sm:w-48">
+                  <button
+                    type="button"
+                    onClick={() => setVolume(volume > 0 ? 0 : 0.4)}
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {volume === 0 ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                  </button>
+                  <Slider
+                    value={[volumePercent]}
+                    onValueChange={([v]) => setVolume(v / 100)}
+                    max={100}
+                    step={5}
+                    className="flex-1"
+                  />
+                  <span className="text-[10px] font-mono text-muted-foreground w-8 text-right">{volumePercent}%</span>
+                </div>
+              </div>
             </div>
           )}
+
+          {/* Legal Compliance Badge */}
+          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground/90 pt-1">
+            <ShieldCheck className="w-3 h-3 text-emerald-500 shrink-0" />
+            <span>100% Legal &amp; Royalty-Free: Procedurally generated audio &amp; US statutorily licensed webcasting</span>
+          </div>
         </div>
       </CardContent>
     </Card>
