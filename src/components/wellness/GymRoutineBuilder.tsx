@@ -15,6 +15,7 @@ import { useGymRoutines, type Exercise, type Routine } from '@/hooks/useGymRouti
 import { useFriends } from '@/hooks/useFriends';
 import { useWorkouts } from '@/hooks/useWorkouts';
 import { useAuth } from '@/contexts/AuthContext';
+import { generateLocalWorkoutRoutine } from '@/lib/aiService';
 
 function RestTimer() {
   const [seconds, setSeconds] = useState(60);
@@ -116,12 +117,24 @@ function AiGenerator({ onCreated }: { onCreated: () => void }) {
   const generate = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('generate-workout-routine', {
-        body: { goal, age, daysPerWeek: days, equipment },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      const r = data.routine;
+      let r: any = null;
+
+      try {
+        const { data, error } = await supabase.functions.invoke('generate-workout-routine', {
+          body: { goal, age, daysPerWeek: days, equipment },
+        });
+        if (!error && data?.routine?.exercises?.length) {
+          r = data.routine;
+        }
+      } catch (edgeErr) {
+        console.warn('Backend edge function unavailable, activating built-in workout AI engine:', edgeErr);
+      }
+
+      // If backend was unconfigured or failed, use smart routine generator
+      if (!r) {
+        r = generateLocalWorkoutRoutine(goal, age, days, equipment);
+      }
+
       const exercises: Exercise[] = (r.exercises || []).map((e: { name: string; sets: number; reps: string }) => ({
         id: crypto.randomUUID(), name: e.name, sets: e.sets, reps: e.reps,
       }));

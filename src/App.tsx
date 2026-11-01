@@ -13,6 +13,7 @@ import Auth from "./pages/Auth";
 import Graduation from "./pages/Graduation";
 import MenuUpload from "./pages/MenuUpload";
 import Admin from "./pages/Admin";
+import { AdminGuard } from "@/components/admin/AdminGuard";
 import About from "./pages/About";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import SecretWarning from "./pages/SecretWarning";
@@ -50,7 +51,7 @@ const App = () => (
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/graduation" element={<Graduation />} />
                   <Route path="/menu-upload" element={<MenuUpload />} />
-                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/admin" element={<AdminGuard><Admin /></AdminGuard>} />
                   <Route path="/about" element={<About />} />
                   <Route path="/privacy" element={<PrivacyPolicy />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />

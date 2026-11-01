@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Helmet } from 'react-helmet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { CreatorSocialLinks } from '@/components/about/CreatorSocialLinks';
-import { SuggestionsSection } from '@/components/about/SuggestionsSection';
 import { Separator } from '@/components/ui/separator';
 
 const CURRENT_VERSION = '1.2';
@@ -330,8 +329,6 @@ export default function About() {
           </CardContent>
         </Card>
 
-        {/* Suggestions */}
-        <SuggestionsSection />
 
         {/* Creator */}
         <Card className="bg-gradient-to-br from-primary/10 via-primary/5 to-background border-primary/20">

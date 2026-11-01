@@ -9,29 +9,15 @@ import { AdminProfiles } from '@/components/admin/AdminProfiles';
 import { AdminStudyHalls } from '@/components/admin/AdminStudyHalls';
 import { AdminRoleRequests } from '@/components/admin/AdminRoleRequests';
 import { AdminFeedback } from '@/components/admin/AdminFeedback';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Loader2, Shield, Users, Mail, School, Utensils, UserCheck, BookOpen, ShieldCheck, ArrowUpCircle, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Shield, Users, Mail, School, Utensils, UserCheck, BookOpen, ShieldCheck, ArrowUpCircle, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
-export default function Admin() {
-  const { user, loading: authLoading } = useAuth();
-  const { isAdmin, isLoading: rolesLoading } = useUserRoles();
+function AdminContent() {
   const navigate = useNavigate();
-
-  if (authLoading || rolesLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    navigate('/auth');
-    return null;
-  }
 
   return (
     <>
@@ -136,5 +122,13 @@ export default function Admin() {
         </main>
       </div>
     </>
+  );
+}
+
+export default function Admin() {
+  return (
+    <AdminGuard>
+      <AdminContent />
+    </AdminGuard>
   );
 }

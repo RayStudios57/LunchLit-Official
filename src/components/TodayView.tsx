@@ -3,6 +3,7 @@ import { BookOpen, ArrowRight } from 'lucide-react';
 import { useSchoolStudyHalls } from '@/hooks/useSchoolStudyHalls';
 import { DailyFocus } from '@/components/dashboard/DailyFocus';
 import { InviteFriendsCard } from '@/components/dashboard/InviteFriendsCard';
+import { SuggestionsSection } from '@/components/about/SuggestionsSection';
 
 interface TodayViewProps {
   onNavigateToMenu: () => void;
@@ -24,7 +25,7 @@ export function TodayView({ onNavigateToStudy, onNavigate }: TodayViewProps) {
         <InviteFriendsCard />
       </section>
 
-      {/* Student Quick Action Hub - LunchLit 1.2 UX update */}
+      {/* Student Quick Action Hub - LunchLit 1.3 UX update */}
       <section className="opacity-0 animate-fade-up stagger-3">
         <div className="rounded-2xl border border-border/80 bg-card/60 p-4 sm:p-5 shadow-sm">
           <div className="flex items-center justify-between mb-3.5">
@@ -32,7 +33,7 @@ export function TodayView({ onNavigateToStudy, onNavigate }: TodayViewProps) {
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               Student Quick Actions
             </h3>
-            <span className="text-xs text-muted-foreground">LunchLit 1.2</span>
+            <span className="text-xs text-muted-foreground">LunchLit 1.3</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             <button
@@ -116,6 +117,11 @@ export function TodayView({ onNavigateToStudy, onNavigate }: TodayViewProps) {
           </div>
         </section>
       )}
+
+      {/* Suggestions & Feedback at bottom of Today */}
+      <section className="opacity-0 animate-fade-up stagger-3 pt-2">
+        <SuggestionsSection />
+      </section>
     </div>
   );
 }

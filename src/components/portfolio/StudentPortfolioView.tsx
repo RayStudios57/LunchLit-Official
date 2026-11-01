@@ -16,6 +16,8 @@ import { TargetSchoolsManager } from './TargetSchoolsManager';
 import { CollegePredictor } from './CollegePredictor';
 import { StrengthsFinder } from './StrengthsFinder';
 import { ScholarshipsTab } from './ScholarshipsTab';
+import { InternshipFinder } from './InternshipFinder';
+import { CompetitionFinder } from './CompetitionFinder';
 
 export function StudentPortfolioView() {
   const { user } = useAuth();
@@ -24,7 +26,7 @@ export function StudentPortfolioView() {
   const { academics } = useBragSheetAcademics();
   const { goals, stats: goalStats } = useStudentGoals();
   const { schools, stats: schoolStats } = useTargetSchools();
-  const [activeTab, setActiveTab] = useState<'overview' | 'goals' | 'schools' | 'predictor' | 'strengths' | 'scholarships'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'internships' | 'competitions' | 'scholarships' | 'goals' | 'schools' | 'predictor' | 'strengths'>('overview');
 
   if (!user) {
     return (
@@ -139,6 +141,20 @@ export function StudentPortfolioView() {
                 <Trophy className="w-4 h-4" />
                 Overview
               </TabsTrigger>
+              <TabsTrigger value="internships" className="flex items-center gap-1 font-semibold text-primary">
+                <Briefcase className="w-4 h-4" />
+                Internships
+                <span className="ml-1 px-1.5 py-0.2 rounded-full bg-primary/20 text-[10px] font-bold">1.3</span>
+              </TabsTrigger>
+              <TabsTrigger value="competitions" className="flex items-center gap-1 font-semibold text-amber-600 dark:text-amber-400">
+                <Award className="w-4 h-4" />
+                Competitions
+                <span className="ml-1 px-1.5 py-0.2 rounded-full bg-amber-500/20 text-[10px] font-bold">1.3</span>
+              </TabsTrigger>
+              <TabsTrigger value="scholarships" className="flex items-center gap-1">
+                <DollarSign className="w-4 h-4" />
+                Scholarships
+              </TabsTrigger>
               <TabsTrigger value="goals" className="flex items-center gap-1">
                 <Target className="w-4 h-4" />
                 Goals
@@ -155,10 +171,6 @@ export function StudentPortfolioView() {
                 <Sparkles className="w-4 h-4" />
                 Strengths
               </TabsTrigger>
-              <TabsTrigger value="scholarships" className="flex items-center gap-1">
-                <DollarSign className="w-4 h-4" />
-                Scholarships
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview">
@@ -168,6 +180,18 @@ export function StudentPortfolioView() {
                 goals={goals} 
                 schools={schools}
               />
+            </TabsContent>
+
+            <TabsContent value="internships">
+              <InternshipFinder />
+            </TabsContent>
+
+            <TabsContent value="competitions">
+              <CompetitionFinder />
+            </TabsContent>
+
+            <TabsContent value="scholarships">
+              <ScholarshipsTab />
             </TabsContent>
 
             <TabsContent value="goals">
@@ -184,10 +208,6 @@ export function StudentPortfolioView() {
 
             <TabsContent value="strengths">
               <StrengthsFinder />
-            </TabsContent>
-
-            <TabsContent value="scholarships">
-              <ScholarshipsTab />
             </TabsContent>
           </Tabs>
         </CardContent>

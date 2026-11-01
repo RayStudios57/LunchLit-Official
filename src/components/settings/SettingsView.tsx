@@ -29,6 +29,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { isOwnerEmail } from '@/lib/secrets';
 import { NotificationPreferencesCard } from './NotificationPreferencesCard';
+import { AiSettingsCard } from './AiSettingsCard';
 import { UserRolesCard } from './UserRolesCard';
 import { RedemptionCodeCard } from './RedemptionCodeCard';
 
@@ -657,6 +658,9 @@ export function SettingsView() {
 
       {/* Notification Preferences */}
       <NotificationPreferencesCard />
+
+      {/* AI Assistant Settings */}
+      <AiSettingsCard />
 
       {/* Calendar Sync Section */}
       <Card className="card-elevated">
