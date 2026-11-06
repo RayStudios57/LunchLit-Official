@@ -1,3 +1,40 @@
+📦 v1.3
+November 2026
+
+✨ Added
+
+🎓 **High School Internship Finder**: Comprehensive directory of 15+ curated, verified high school internships (NASA OSTEM, NIH HS-SIP, Bank of America Student Leaders, Microsoft Discovery, U.S. Senate Page Program, Hutton Fisheries, etc.) with search, field filters (STEM, Tech, Medicine, Business, Law, Arts), compensation filters (Paid, Stipend, Tuition-Free), and saved internship tracking.
+
+🏆 **High School Competition Finder**: Premier national and international competitions for high schoolers (Regeneron STS, Regeneron ISEF, USACO, AMC 10/12 & AIME, Congressional App Challenge, Scholastic Art & Writing, Diamond Challenge, DECA, FBLA) with prize details, prestige tiers, and 1-click deadline addition to Tasks.
+
+🛡️ **Hardened Admin Security Shield**: Strict multi-tiered role authorization blocking unauthorized direct URL navigation to `/admin`. Displays a dedicated Access Denied security screen and provides an emergency administrative verification key challenge.
+
+🤖 **Resilient Dual-Engine AI Architecture**: Seamless pedagogical AI tutor and fitness coach ensuring zero-downtime student support for AI Study Buddy (`ChatBot`), AI Gym Routine Generator, AI Machine Scanner, and Scholarships even when backend cloud edge functions are offline or unconfigured.
+
+💡 **Today Suggestions Box**: Moved community suggestions and feedback from the About page directly to the bottom of the Today dashboard for instant, convenient student feedback submissions.
+
+⚙️ **AI Customization in Settings**: Added optional personal Google Gemini API key configuration in Settings for students wishing to use their own cloud API quotas.
+
+🔍 **Resilient Scholarships Directory**: Built-in verified national, institutional, and regional scholarship database ensuring search results always deliver active funding opportunities.
+
+🧭 Improved & Updated
+
+🔒 Full protection of admin dashboard queries and components from unauthorized rendering.
+📱 Mobile navigation bar and banner updated to v1.3.
+
+📦 v1.2
+October 2026
+
+✨ Added
+🚀 Major Today Screen Overhaul: Dynamic hero section with real-time class tracking, live bell countdown, and "Up Next" preview guidance.
+📱 Touch-First Mobile Experience: Brand-new mobile bottom navigation bar & compact mobile header.
+🔗 Unified Action Hub: Merged Today's #1 Focus with an interactive task checklist and 48-hour exam radar.
+⏱️ Elevated Pomodoro Study Bar: Quick-launch timers with subject tagging and integrated lofi music streams.
+🏆 Brag Sheet Quick-Capture: One-tap "+ Log Daily Win" modal to instantly record achievements on the fly.
+🏫 Advanced Classes & Schedule Management: Native support for Lunch Blocks, Passing/Advisory Periods, and Extracurricular Clubs.
+🔄 Rotation Schedules: Seamless toggle support for Gold/Blue days and alternative block schedules.
+📊 Smart GPA & Sync Fixes: Resolved OCR grade scanning Edge Function errors with graceful manual fallbacks.
+
 📦 v1.1
 May 2026
 

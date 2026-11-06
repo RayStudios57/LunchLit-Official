@@ -194,7 +194,7 @@ export function MobileBottomNav({ activeTab, onTabChange }: MobileBottomNavProps
               className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-secondary/80 text-secondary-foreground hover:bg-secondary"
             >
               <Info className="w-3.5 h-3.5" />
-              v1.2
+              v1.3
             </Link>
           </div>
 

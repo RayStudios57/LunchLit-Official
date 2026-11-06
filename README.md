@@ -1,7 +1,7 @@
 # 📘 LunchLit
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-1.2-blue?style=for-the-badge&logo=appveyor" alt="Version 1.2">
+  <img src="https://img.shields.io/badge/Version-1.3-blue?style=for-the-badge&logo=appveyor" alt="Version 1.3">
   <img src="https://img.shields.io/badge/Platform-Web-green?style=for-the-badge" alt="Platform Web">
   <img src="https://img.shields.io/badge/Status-Live-success?style=for-the-badge" alt="Status Live">
 </p>
@@ -30,7 +30,12 @@
 
 ## ✨ Features 
 
-(v1.2 Updates)
+### 🎓 v1.3 Updates — College Prep Overhaul
+- **High School Internship Finder:** 15+ curated, verified opportunities (NASA OSTEM, NIH HS-SIP, Bank of America, Microsoft Discovery, U.S. Senate Pages) with field, compensation, and remote/in-person filters.
+- **High School Competition Finder:** Prestigious STEM, coding, math, business, and writing competitions (Regeneron STS/ISEF, USACO, AMC, DECA, Congressional App Challenge) with 1-click deadline addition to Tasks.
+- **Hardened Admin Security Shield:** Multi-tier authorization locking `/admin` with an emergency security key verification challenge.
+- **Resilient Dual-Engine AI Architecture:** Zero-downtime student tutoring, workout generation, machine scanner, and scholarship matching even when cloud edge functions are offline.
+- **Today Community Suggestions:** 1-tap feedback and idea submissions placed directly at the bottom of the daily Today dashboard.
 
 ### 📅 Daily Planning & Today Dashboard
 - **Dynamic Hero Section:** Real-time current class/period tracker featuring a live countdown progress bar to the next bell and "Up Next" preview guidance.
