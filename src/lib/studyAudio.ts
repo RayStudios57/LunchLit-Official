@@ -153,14 +153,15 @@ class StudyAudioEngine {
 
   private getAudioContext(): AudioContext {
     if (!this.audioCtx) {
-      const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioCtxClass = typeof window !== 'undefined' ? (window.AudioContext || (window as any).webkitAudioContext) : null;
+      if (!AudioCtxClass) throw new Error('AudioContext not supported in this browser');
       this.audioCtx = new AudioCtxClass();
       this.masterGain = this.audioCtx.createGain();
       this.masterGain.gain.setValueAtTime(this.volume, this.audioCtx.currentTime);
       this.masterGain.connect(this.audioCtx.destination);
     }
     if (this.audioCtx.state === 'suspended') {
-      this.audioCtx.resume();
+      this.audioCtx.resume().catch(() => {});
     }
     return this.audioCtx;
   }

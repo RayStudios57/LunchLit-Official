@@ -251,7 +251,7 @@ export const HIGH_SCHOOL_COMPETITIONS: Competition[] = [
 ];
 
 export function CompetitionFinder() {
-  const { createTask } = useTasks();
+  const { addTask } = useTasks();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [formatFilter, setFormatFilter] = useState<string>('all');
@@ -280,12 +280,14 @@ export function CompetitionFinder() {
   };
 
   const addDeadlineToTasks = (comp: Competition) => {
-    createTask.mutate({
-      title: `Prepare & Register: ${comp.title}`,
+    addTask.mutate({
+      title: `Register: ${comp.title}`,
       description: `Target deadline: ${comp.deadline}. Category: ${comp.category.toUpperCase()}. Official link: ${comp.url}`,
       priority: 'high',
-      status: 'pending',
+      category: 'project',
       due_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      due_time: null,
+      is_completed: false,
     });
     toast.success(`Added "${comp.title}" deadline to your Tasks! 📝`);
   };

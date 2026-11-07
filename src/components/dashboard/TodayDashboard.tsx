@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useClassSchedule, ClassSchedule } from '@/hooks/useClassSchedule';
 import { useTasks, Task } from '@/hooks/useTasks';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
@@ -46,6 +47,7 @@ import { isRotationEnabled, getRotationLetter, classMatchesRotation } from '@/li
 import { GraduationCountdown } from '@/components/dashboard/GraduationCountdown';
 import { MotivationalQuote } from '@/components/dashboard/MotivationalQuote';
 import { LunchLitV12Banner } from '@/components/dashboard/LunchLitV12Banner';
+import { SuggestionsSection } from '@/components/about/SuggestionsSection';
 import { usePomodoro, PomodoroMode, POMODORO_LABELS } from '@/hooks/usePomodoro';
 import { useStudyAudio } from '@/hooks/useStudyAudio';
 import { toast } from 'sonner';
@@ -77,6 +79,11 @@ export function TodayDashboard({ onNavigate }: TodayDashboardProps) {
 
       {/* 5. End-of-Year Countdown (Footer Anchor) */}
       <GraduationCountdown />
+
+      {/* 6. Community Feedback & Suggestions Box */}
+      <div className="pt-2">
+        <SuggestionsSection />
+      </div>
     </div>
   );
 }
@@ -304,6 +311,7 @@ function ActiveClassHero({ onNavigate }: { onNavigate: (tab: string) => void }) 
 // 2. COMBINED ACTION HUB: "TODAY AT A GLANCE" + DAILY FOCUS
 // =========================================================================
 function CombinedActionHub({ onNavigate }: { onNavigate: (tab: string) => void }) {
+  const { user } = useAuth();
   const { tasks, addTask, updateTask } = useTasks();
   const [priorityDraft, setPriorityDraft] = useState('');
   const [prioritySaved, setPrioritySaved] = useState<{ text: string; done: boolean } | null>(null);
@@ -367,6 +375,10 @@ function CombinedActionHub({ onNavigate }: { onNavigate: (tab: string) => void }
 
   const handleCreateTask = async () => {
     if (!newTaskTitle.trim()) return;
+    if (!user) {
+      toast.error('Sign in to sync assignments across devices!');
+      return;
+    }
     await addTask.mutateAsync({
       title: newTaskTitle.trim(),
       description: null,
@@ -825,6 +837,7 @@ function IntegratedStudyBar({ onNavigate }: { onNavigate: (tab: string) => void 
 // 4. QUICK CAPTURE "WIN LOG" WIDGET (APPENDS TO BRAG SHEET)
 // =========================================================================
 function QuickWinLogWidget({ onNavigate }: { onNavigate: (tab: string) => void }) {
+  const { user } = useAuth();
   const { addEntry } = useBragSheet();
   const [modalOpen, setModalOpen] = useState(false);
   const [winTitle, setWinTitle] = useState('');
@@ -834,6 +847,10 @@ function QuickWinLogWidget({ onNavigate }: { onNavigate: (tab: string) => void }
 
   const handleSaveWin = async () => {
     if (!winTitle.trim()) return;
+    if (!user) {
+      toast.error('Sign in to log wins to your Brag Sheet!');
+      return;
+    }
 
     await addEntry.mutateAsync({
       title: winTitle.trim(),

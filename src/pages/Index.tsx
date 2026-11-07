@@ -115,9 +115,7 @@ const Index = () => {
         <main className="container py-4 md:py-6 pb-24 md:pb-6">
           {activeTab === 'home' && (
             <div className="space-y-6">
-              <AuthOverlay isAuthenticated={!!user}>
-                <TodayDashboard onNavigate={(tab) => setActiveTab(tab as TabType)} />
-              </AuthOverlay>
+              <TodayDashboard onNavigate={(tab) => setActiveTab(tab as TabType)} />
               <Credits />
             </div>
           )}
@@ -172,9 +170,7 @@ const Index = () => {
             </AuthOverlay>
           )}
           {activeTab === 'portfolio' && (
-            <AuthOverlay isAuthenticated={!!user}>
-              <StudentPortfolioView />
-            </AuthOverlay>
+            <StudentPortfolioView />
           )}
           {activeTab === 'profiles' && (
             <AuthOverlay isAuthenticated={!!user}>

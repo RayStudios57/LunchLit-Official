@@ -16,11 +16,11 @@ const changelogData = [
     changes: [
       '🎓 Major College Prep Overhaul: High School Internship Finder with 15+ verified, top-tier internships (NASA OSTEM, NIH HS-SIP, Bank of America Student Leaders, Microsoft Discovery, US Senate Pages) with field, compensation, and remote/in-person filters',
       '🏆 High School Competition Finder: Prestigious national & international STEM, coding, math, business, and writing competitions (Regeneron STS/ISEF, USACO, AMC, DECA, Congressional App Challenge) with 1-click deadline addition to Tasks',
-      '🛡️ Hardened Admin Security Shield: Strict role enforcement & multi-tier authorization blocking unauthorized visitors from /admin with emergency security key override',
       '🤖 Zero-Downtime Resilient Dual-Engine AI: Built-in pedagogical intelligence for AI Study Buddy, AI Gym Routine Generator, AI Machine Scanner, and Scholarship Finder ensuring seamless homework help and workout generation even when cloud functions are offline',
       '💡 Community Suggestions Moved to Today: Moved feedback and suggestion box directly to the bottom of the Today dashboard for rapid, accessible student submissions',
       '⚙️ AI Configuration & Gemini Keys: Added custom Google Gemini API key options in Settings alongside the built-in offline engine',
       '🔍 Scholarship Finder Reliability: Built-in verified high school and college scholarships directory so scholarship searches always return real, actionable results',
+      '⚡ General performance optimizations & overall platform reliability enhancements',
     ],
   },
   {

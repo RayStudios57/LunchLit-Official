@@ -55,7 +55,7 @@ export function PomodoroTimer() {
     setVolume,
   } = useStudyAudio();
 
-  const incompleteTasks = tasks.filter((t) => !t.is_completed);
+  const incompleteTasks = (tasks || []).filter((t) => !t?.is_completed);
 
   return (
     <Card className="card-elevated border-border/80 shadow-md">

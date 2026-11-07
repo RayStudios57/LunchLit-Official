@@ -98,7 +98,7 @@ export function LunchLitV12Banner({ onNavigate }: LunchLitV12BannerProps) {
 
         {/* Description */}
         <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
-          Supercharge your high school journey &amp; college applications: High School Internship Finder, High School Competition Radar, resilient Dual-Engine AI Study Buddy, hardened Admin Security, and 1-tap Community Suggestions right from Today! 🚀🎓
+          Supercharge your high school journey &amp; college applications: High School Internship Finder, High School Competition Radar, resilient Dual-Engine AI Study Buddy, verified Scholarships, and 1-tap Community Suggestions right from Today! 🚀🎓
         </p>
 
         {/* Feature Highlights Pills */}
@@ -113,7 +113,7 @@ export function LunchLitV12Banner({ onNavigate }: LunchLitV12BannerProps) {
             <Bot className="w-3 h-3 text-blue-500" /> Zero-Downtime AI Companion
           </Badge>
           <Badge variant="secondary" className="text-[11px] font-semibold bg-card/80 border border-border/80 text-foreground py-1 px-2.5 flex items-center gap-1 shadow-sm">
-            <Shield className="w-3 h-3 text-emerald-500" /> Hardened Admin Shield
+            <span>💰</span> Verified Scholarships
           </Badge>
           <Badge variant="secondary" className="text-[11px] font-semibold bg-card/80 border border-border/80 text-foreground py-1 px-2.5 flex items-center gap-1 shadow-sm">
             <span>💡</span> Today Suggestions Box

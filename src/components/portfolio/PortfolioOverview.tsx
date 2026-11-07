@@ -24,13 +24,18 @@ const categoryIcons: Record<string, any> = {
   other: Trophy,
 };
 
-export function PortfolioOverview({ entries, academics, goals, schools }: PortfolioOverviewProps) {
-  const recentEntries = entries.slice(0, 5);
-  const activeGoals = goals.filter(g => g.status === 'in_progress').slice(0, 3);
-  const topSchools = schools.slice(0, 4);
+export function PortfolioOverview({ entries = [], academics, goals = [], schools = [] }: PortfolioOverviewProps) {
+  const safeEntries = entries || [];
+  const safeGoals = goals || [];
+  const safeSchools = schools || [];
+  const recentEntries = safeEntries.slice(0, 5);
+  const activeGoals = safeGoals.filter(g => g?.status === 'in_progress').slice(0, 3);
+  const topSchools = safeSchools.slice(0, 4);
 
-  const categoryCounts = entries.reduce((acc, e) => {
-    acc[e.category] = (acc[e.category] || 0) + 1;
+  const categoryCounts = safeEntries.reduce((acc, e) => {
+    if (e?.category) {
+      acc[e.category] = (acc[e.category] || 0) + 1;
+    }
     return acc;
   }, {} as Record<string, number>);
 

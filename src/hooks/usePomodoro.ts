@@ -53,7 +53,7 @@ function loadInitialState(): PomodoroState {
     selectedSubject: 'General Study',
     selectedTaskId: 'none',
     sessionsCompleted: getStoredSessions(),
-    autoPlayAudio: true,
+    autoPlayAudio: false,
   };
 
   try {
@@ -92,6 +92,7 @@ class PomodoroManager {
   private listeners = new Set<(state: PomodoroState) => void>();
   private worker: Worker | null = null;
   private fallbackInterval: number | null = null;
+  private lastSavedTime: number = 0;
 
   constructor() {
     this.state = loadInitialState();
@@ -99,21 +100,26 @@ class PomodoroManager {
     this.setupVisibilityListener();
     this.setupStorageListener();
 
-    // If timer was already running when restored, resume it
+    // If timer was already running when restored, resume it if still active
     if (this.state.isRunning && this.state.targetEndTime) {
       const remaining = Math.max(0, Math.round((this.state.targetEndTime - Date.now()) / 1000));
       if (remaining > 0) {
         this.startTicker();
         this.updateTabTitle(remaining, this.state.mode, true);
       } else {
-        this.handleComplete();
+        // Expired timer on reload: reset cleanly and silently WITHOUT triggering notifications or toasts
+        this.state.isRunning = false;
+        this.state.targetEndTime = null;
+        this.state.timeLeft = POMODORO_DURATIONS[this.state.mode];
+        this.saveState(true);
       }
     }
   }
 
   private initWorker() {
+    if (typeof window === 'undefined' || typeof Worker === 'undefined') return;
     try {
-      // Inline Web Worker blob
+      // Inline Web Worker blob for background execution
       const code = `
         let timer = null;
         self.onmessage = function(e) {
@@ -129,10 +135,19 @@ class PomodoroManager {
         };
       `;
       const blob = new Blob([code], { type: 'application/javascript' });
-      this.worker = new Worker(URL.createObjectURL(blob));
+      const workerUrl = URL.createObjectURL(blob);
+      this.worker = new Worker(workerUrl);
       this.worker.onmessage = (e) => {
         if (e.data === 'tick') {
           this.handleTick();
+        }
+      };
+      this.worker.onerror = (err) => {
+        console.warn('Pomodoro worker error, falling back to window interval:', err);
+        try { this.worker?.terminate(); } catch {}
+        this.worker = null;
+        if (this.state.isRunning) {
+          this.startFallbackTicker();
         }
       };
     } catch (e) {
@@ -162,13 +177,16 @@ class PomodoroManager {
             ...remoteState,
             sessionsCompleted: getStoredSessions(),
           };
-          this.notify();
+          this.notify(false);
         } catch {}
       }
     });
   }
 
-  private saveState() {
+  private saveState(force = false) {
+    const now = Date.now();
+    if (!force && now - this.lastSavedTime < 4000) return;
+    this.lastSavedTime = now;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
     } catch {}
@@ -180,23 +198,34 @@ class PomodoroManager {
     return () => this.listeners.delete(cb);
   }
 
-  private notify() {
-    this.saveState();
+  private notify(save = true) {
+    if (save) this.saveState(false);
     this.listeners.forEach(cb => cb(this.state));
   }
 
   private startTicker() {
     if (this.worker) {
-      this.worker.postMessage('start');
+      try {
+        this.worker.postMessage('start');
+      } catch {
+        this.worker = null;
+        this.startFallbackTicker();
+      }
     } else {
-      if (this.fallbackInterval) clearInterval(this.fallbackInterval);
-      this.fallbackInterval = window.setInterval(() => this.handleTick(), 1000);
+      this.startFallbackTicker();
     }
+  }
+
+  private startFallbackTicker() {
+    if (this.fallbackInterval) clearInterval(this.fallbackInterval);
+    this.fallbackInterval = window.setInterval(() => this.handleTick(), 1000);
   }
 
   private stopTicker() {
     if (this.worker) {
-      this.worker.postMessage('stop');
+      try {
+        this.worker.postMessage('stop');
+      } catch {}
     }
     if (this.fallbackInterval) {
       clearInterval(this.fallbackInterval);
@@ -237,11 +266,17 @@ class PomodoroManager {
     this.stopTicker();
     const finishedMode = this.state.mode;
 
-    // Play pleasant synthesized harmonic chime
-    studyAudio.playCompletionChime();
+    // Play pleasant synthesized harmonic chime safely
+    try {
+      studyAudio.playCompletionChime();
+    } catch (err) {
+      console.warn('Could not play chime:', err);
+    }
 
     // Trigger Desktop Notification if permitted
-    this.sendNotification(finishedMode);
+    try {
+      this.sendNotification(finishedMode);
+    } catch {}
 
     if (finishedMode === 'work') {
       const nextSessions = this.state.sessionsCompleted + 1;
@@ -255,18 +290,22 @@ class PomodoroManager {
       } catch {}
 
       const nextMode: PomodoroMode = nextSessions % 4 === 0 ? 'long_break' : 'short_break';
-      toast.success(`🎉 Focus session complete for ${this.state.selectedSubject}!`, {
-        description: `Great job! Take a ${nextMode === 'long_break' ? '15-minute long' : '5-minute'} break.`,
-      });
+      try {
+        toast.success(`🎉 Focus session complete for ${this.state.selectedSubject}!`, {
+          description: `Great job! Take a ${nextMode === 'long_break' ? '15-minute long' : '5-minute'} break.`,
+        });
+      } catch {}
 
       this.state.mode = nextMode;
       this.state.timeLeft = POMODORO_DURATIONS[nextMode];
       this.state.isRunning = false;
       this.state.targetEndTime = null;
     } else {
-      toast.info('☕ Break finished! Ready to focus again?', {
-        description: `Starting next focus session on ${this.state.selectedSubject}.`,
-      });
+      try {
+        toast.info('☕ Break finished! Ready to focus again?', {
+          description: `Starting next focus session on ${this.state.selectedSubject}.`,
+        });
+      } catch {}
 
       this.state.mode = 'work';
       this.state.timeLeft = POMODORO_DURATIONS.work;
@@ -275,7 +314,8 @@ class PomodoroManager {
     }
 
     this.updateTabTitle(this.state.timeLeft, this.state.mode, false);
-    this.notify();
+    this.saveState(true);
+    this.notify(false);
   }
 
   private sendNotification(finishedMode: PomodoroMode) {
@@ -305,12 +345,15 @@ class PomodoroManager {
     this.startTicker();
     this.updateTabTitle(this.state.timeLeft, this.state.mode, true);
 
-    // Auto-play audio if enabled and not currently playing
+    // Auto-play audio if explicitly enabled and not currently playing
     if (this.state.autoPlayAudio && !studyAudio.getIsPlaying()) {
-      studyAudio.play();
+      try {
+        studyAudio.play();
+      } catch {}
     }
 
-    this.notify();
+    this.saveState(true);
+    this.notify(false);
   }
 
   public pause() {
@@ -323,7 +366,8 @@ class PomodoroManager {
     this.state.isRunning = false;
     this.state.targetEndTime = null;
     this.updateTabTitle(this.state.timeLeft, this.state.mode, false);
-    this.notify();
+    this.saveState(true);
+    this.notify(false);
   }
 
   public reset(newMode?: PomodoroMode) {
@@ -334,7 +378,8 @@ class PomodoroManager {
     this.state.isRunning = false;
     this.state.targetEndTime = null;
     this.updateTabTitle(this.state.timeLeft, this.state.mode, false);
-    this.notify();
+    this.saveState(true);
+    this.notify(false);
   }
 
   public setMode(mode: PomodoroMode) {
@@ -343,17 +388,20 @@ class PomodoroManager {
 
   public setSubject(subject: string) {
     this.state.selectedSubject = subject;
-    this.notify();
+    this.saveState(true);
+    this.notify(false);
   }
 
   public setTaskId(taskId: string) {
     this.state.selectedTaskId = taskId;
-    this.notify();
+    this.saveState(true);
+    this.notify(false);
   }
 
   public setAutoPlayAudio(val: boolean) {
     this.state.autoPlayAudio = val;
-    this.notify();
+    this.saveState(true);
+    this.notify(false);
   }
 
   public getState(): PomodoroState {

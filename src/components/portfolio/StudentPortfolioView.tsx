@@ -28,23 +28,23 @@ export function StudentPortfolioView() {
   const { schools, stats: schoolStats } = useTargetSchools();
   const [activeTab, setActiveTab] = useState<'overview' | 'internships' | 'competitions' | 'scholarships' | 'goals' | 'schools' | 'predictor' | 'strengths'>('overview');
 
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <Target className="w-16 h-16 text-muted-foreground mb-4" />
-        <h2 className="text-2xl font-display font-bold mb-2">College Prep</h2>
-        <p className="text-muted-foreground mb-6 max-w-md">
-          Plan for college, track your goals, and find live scholarships.
-        </p>
-        <Button asChild>
-          <Link to="/auth">Sign in to access LunchLit</Link>
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6 animate-fade-up">
+      {/* Guest Mode Explorer Banner */}
+      {!user && (
+        <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-foreground">
+            <Sparkles className="w-4 h-4 text-primary shrink-0" />
+            <span>
+              <strong>Welcome to College Prep!</strong> Explore 15+ high school internships, premier national competitions, verified scholarships, and admissions odds. Sign in anytime to sync your personal goals and target school list.
+            </span>
+          </div>
+          <Button size="sm" variant="outline" className="h-7 text-xs shrink-0 self-start sm:self-center" asChild>
+            <Link to="/auth">Sign In</Link>
+          </Button>
+        </div>
+      )}
+
       {/* Header Card */}
       <Card className="card-elevated bg-gradient-to-br from-primary/5 to-primary/10">
         <CardContent className="pt-6">
@@ -54,16 +54,16 @@ export function StudentPortfolioView() {
                 <User className="w-8 h-8 text-primary" />
               </div>
               <div>
-                <h1 className="text-2xl font-display font-bold">{profile?.full_name || 'Student'}</h1>
+                <h1 className="text-2xl font-display font-bold">{profile?.full_name || (user ? 'Student' : 'Student Explorer')}</h1>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                   <span className="flex items-center gap-1">
                     <Mail className="w-4 h-4" />
-                    {user.email}
+                    {user?.email || 'Guest Student Mode'}
                   </span>
-                  {profile?.grade_level && (
+                  {(profile?.grade_level || !user) && (
                     <span className="flex items-center gap-1">
                       <GraduationCap className="w-4 h-4" />
-                      {profile.grade_level}
+                      {profile?.grade_level || 'High School'}
                     </span>
                   )}
                 </div>
@@ -175,10 +175,10 @@ export function StudentPortfolioView() {
 
             <TabsContent value="overview">
               <PortfolioOverview 
-                entries={entries} 
+                entries={entries || []} 
                 academics={academics} 
-                goals={goals} 
-                schools={schools}
+                goals={goals || []} 
+                schools={schools || []}
               />
             </TabsContent>
 
@@ -195,10 +195,26 @@ export function StudentPortfolioView() {
             </TabsContent>
 
             <TabsContent value="goals">
+              {!user && (
+                <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs flex items-center justify-between gap-2">
+                  <span>Sign in to save and sync custom goals to your profile.</span>
+                  <Button size="sm" variant="outline" className="h-6 text-xs" asChild>
+                    <Link to="/auth">Sign In</Link>
+                  </Button>
+                </div>
+              )}
               <GoalsManager />
             </TabsContent>
 
             <TabsContent value="schools">
+              {!user && (
+                <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs flex items-center justify-between gap-2">
+                  <span>Sign in to save Reach, Target, and Safety schools to your profile.</span>
+                  <Button size="sm" variant="outline" className="h-6 text-xs" asChild>
+                    <Link to="/auth">Sign In</Link>
+                  </Button>
+                </div>
+              )}
               <TargetSchoolsManager />
             </TabsContent>
 
